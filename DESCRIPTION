@@ -11,7 +11,7 @@ Description: This package contains code to run Time-to-Event, Space-to-Event, an
     2) a dataframe with two columns: cam (unique ID for the camera; any class) 
     and a (area of the camera, class numeric).
     Disclaimer! This package is currently in development and probably buggy.  
-Depends: R (>= 3.5.2)
+Depends: R (>= 3.5.1)
 License: MIT License
 Encoding: UTF-8
 LazyData: true
