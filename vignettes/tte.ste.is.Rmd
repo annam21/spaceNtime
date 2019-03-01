@@ -46,11 +46,11 @@ df <- data.frame(cam = c(1,1,2,2),
 
 As shown above, the database must contain the following columns (at a minimum, and in any order):
 
-- cam (name must be exact). This is the unique ID of the sampling site. This column can be any class of object
+- cam (name must be this exactly). This is the unique ID of the sampling site. This column can be any class of object
 
-- datetime (name must be exact). This is the date and time of the photo, in class POSIXct
+- datetime (name must be this exactly). This is the date and time of the photo, in class POSIXct
 
-- a (name must be exact). This is the viewable area of that camera at that date and time. Class numeric. This column is optional if you create your camera area database through different means than a_lookup_fn (described below)
+- a (name must be this exactly). This is the viewable area of that camera at that date and time. Class numeric. This column is optional if you create your camera area database through different means than a_lookup_fn (described below)
 
  - count. This can actually be named anything, but should be numeric. It is the count of the study species in the photo of interest. 
  
