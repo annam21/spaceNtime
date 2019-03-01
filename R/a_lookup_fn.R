@@ -10,6 +10,7 @@
 #'
 #' @return A dataframe with one row per camera, and its area
 #' @export
+#' @importFrom magrittr "%>%" 
 #'
 #' @examples
 #' df <- data.frame(cam = c(1,1,2,2),

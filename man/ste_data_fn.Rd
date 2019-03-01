@@ -4,7 +4,7 @@
 \alias{ste_data_fn}
 \title{Create STE encounter history}
 \usage{
-ste_data_fn(x, countcol, samp, samplength, camareas, datelim)
+ste_data_fn(x, countcol, samp, samplength, camareas, datelim, A)
 }
 \arguments{
 \item{x}{A dataframe with columns named cam (any class) and datetime (class POSIXct)
@@ -21,6 +21,8 @@ Must have one row per active camera and that camera's area (a)}
 
 \item{datelim}{A vector of length 2 of class POSIXct. The first and last date of the
 desired sampling period.}
+
+\item{A}{The size of the study area (same units as a)}
 }
 \value{
 A list with the encounter history for an STE model.
@@ -41,9 +43,9 @@ df <- data.frame(cam = c(1,1,2,2),
                                     "2016-01-03 13:12:00",
                                     "2016-01-02 14:00:00",
                                     "2016-01-03 16:53:42"),
-                                   tz = "GMT" ),
+                                   tz = "GMT"),
                   a = c(850, 850, 1100, 1100),
-                  count = c(1, 5, 10, 8))
+                  count = c(1, 0, 0, 2))
 tab <- a_lookup_fn(df)
 d <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
 ste_data_fn(df,

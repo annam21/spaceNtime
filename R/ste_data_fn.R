@@ -17,9 +17,11 @@
 #'  Must have one row per active camera and that camera's area (a)
 #' @param datelim A vector of length 2 of class POSIXct. The first and last date of the
 #' desired sampling period.
+#' @param A The size of the study area (same units as a)
 #'
 #' @return A list with the encounter history for an STE model.
 #' @export
+#' @importFrom magrittr "%>%" 
 #'
 #' @examples
 #' df <- data.frame(cam = c(1,1,2,2),
@@ -38,7 +40,7 @@
 #'             samplength = 10,
 #'             camareas = tab,
 #'             datelim = d)
-ste_data_fn <- function(x, countcol, samp, samplength, camareas, datelim){
+ste_data_fn <- function(x, countcol, samp, samplength, camareas, datelim, A){
 
   # Make sure time zones match
   stopifnot(lubridate::tz(datelim) == lubridate::tz(x$datetime))
@@ -49,7 +51,7 @@ ste_data_fn <- function(x, countcol, samp, samplength, camareas, datelim){
 
   # Find pictures WITH animals that are actually in a sampling period
   tmp <- x %>%
-    dplyr::mutate(timer = diff_fun(datetime, st, interval_length = samplength),
+    dplyr::mutate(timer = diff_fn(datetime, st, interval_length = samplength),
            timer = as.POSIXct(timer, origin = "1970-01-01 00:00:00",
                               tz = lubridate::tz(x$datetime)) ) %>%
     dplyr::filter(!is.na(timer),
@@ -80,7 +82,7 @@ ste_data_fn <- function(x, countcol, samp, samplength, camareas, datelim){
     .$pics
   dat.ste <- list(toevent = matrix(c(out, yy), nrow = 1),
                   censor = sum(camareas$a),
-                  A = dplyr::first(x$A)
+                  A = A
   )
 
   return(dat.ste)
