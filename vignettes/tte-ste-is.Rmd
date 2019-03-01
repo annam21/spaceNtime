@@ -20,7 +20,7 @@ The package TTE.STE.IS was created to assist with analyses described in "Three n
 
 ## Install the package
 ```{r, message = F}
-devtools::install_github("annam21/TTE.STE.IS")
+devtools::install_github("annam21/TTE.STE.IS", build_vignettes = T)
 library(TTE.STE.IS)
 ```
 
