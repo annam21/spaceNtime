@@ -18,7 +18,10 @@ knitr::opts_chunk$set(
 
 The package TTE.STE.IS was created to assist with analyses described in "Three novel methods to estimate abundance of unmarked animals using remote cameras" by Moeller et al. (2018). This package helps the user create an encounter history from a database of analyzed photos and run each of the models. Each of the models (Time-to-Event, Space-to-Event, and Instantaneous Sampling) require different encounter histories and functions, so there is an example of each here. 
 
-## Install the package
+This is my first package and is very much in development, so it is guaranteed to have bugs. I would appreciate hearing from you if you encounter problems!
+
+## Load the package
+If you haven't already installed it, please see instructions at the bottom of [my repository](https://github.com/annam21/TTE.STE.IS)
 ```{r, message = F}
 library(TTE.STE.IS)
 ```
