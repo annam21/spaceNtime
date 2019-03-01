@@ -4,7 +4,7 @@
 #' E.g., samp = 3600 for sampling once per hour.
 #'
 #' @param samp The number of seconds between each sampling period
-#' @param datelim A vector of length 2 of class POSIXct. The first and last date of the
+#' @param date_lim A vector of length 2 of class POSIXct. The first and last date of the
 #' desired sampling period.
 #'
 #'
@@ -15,14 +15,14 @@
 #' d <- c(Sys.time()-43200, Sys.time())
 #' sampling_start(3600, d)
 #'
-sampling_start <- function(samp, datelim){
+sampling_start <- function(samp, date_lim){
 
-  # Make sure datelim is the right dimension and class
-  stopifnot(is.null(datelim) | length(datelim) == 2)
-  stopifnot(class(datelim) == c("POSIXct", "POSIXt"))
+  # Make sure date_lim is the right dimension and class
+  stopifnot(is.null(date_lim) | length(date_lim) == 2)
+  stopifnot(class(date_lim) == c("POSIXct", "POSIXt"))
 
   # Vector of all the start times
-  s <- seq(from = datelim[1], to = datelim[2], by = paste(samp, "sec"))
+  s <- seq(from = date_lim[1], to = date_lim[2], by = paste(samp, "sec"))
 
   # Take out the last time in s, because it will almost never be a full sampling period.
   s <- s[1:(length(s) - 1)]

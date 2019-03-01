@@ -4,22 +4,23 @@
 \alias{ste_data_fn}
 \title{Create STE encounter history}
 \usage{
-ste_data_fn(x, countcol, samp, samplength, camareas, datelim, A)
+ste_data_fn(x, count_col, samp, samp_length, cam_areas, date_lim, A)
 }
 \arguments{
 \item{x}{A dataframe with columns named cam (any class) and datetime (class POSIXct)
 and a column (any name) of the count of target species in each photo.}
 
-\item{countcol}{The name of the column containing the count of animals}
+\item{count_col}{The name of the column containing the count of animals}
 
-\item{samp}{How often to sample in seconds. E.g., samp = 3600 for 1 sampling occasion every hour}
+\item{samp}{How often to sample, in seconds. E.g., samp = 3600 for 1 sampling occasion every hour}
 
-\item{samplength}{The desired length of each sampling occasion in seconds.}
+\item{samp_length}{The desired length of each sampling occasion, in seconds. E.g., 
+samp_length = 10 for sampling occasions that last 10 seconds}
 
-\item{camareas}{A dataframe made by a_lookup_fn or similar (with columns cam and a).
+\item{cam_areas}{A dataframe made by a_lookup_fn or similar (with columns cam and a).
 Must have one row per active camera and that camera's area (a)}
 
-\item{datelim}{A vector of length 2 of class POSIXct. The first and last date of the
+\item{date_lim}{A vector of length 2 of class POSIXct. The first and last date of the
 desired sampling period.}
 
 \item{A}{The size of the study area (same units as a)}
@@ -49,9 +50,10 @@ df <- data.frame(cam = c(1,1,2,2),
 tab <- a_lookup_fn(df)
 d <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
 ste_data_fn(df,
-            countcol = "count",
+            count_col = "count",
             samp = 3600,
-            samplength = 10,
-            camareas = tab,
-            datelim = d)
+            samp_length = 10,
+            cam_areas = tab,
+            date_lim = d,
+            A = 150000)
 }

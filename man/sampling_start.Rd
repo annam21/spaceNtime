@@ -4,12 +4,12 @@
 \alias{sampling_start}
 \title{Create sequence of start times}
 \usage{
-sampling_start(samp, datelim)
+sampling_start(samp, date_lim)
 }
 \arguments{
 \item{samp}{The number of seconds between each sampling period}
 
-\item{datelim}{A vector of length 2 of class POSIXct. The first and last date of the
+\item{date_lim}{A vector of length 2 of class POSIXct. The first and last date of the
 desired sampling period.}
 }
 \value{

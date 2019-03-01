@@ -10,12 +10,13 @@
 #'
 #' @param x A dataframe with columns named cam (any class) and datetime (class POSIXct)
 #' and a column (any name) of the count of target species in each photo.
-#' @param countcol The name of the column containing the count of animals
-#' @param samp How often to sample in seconds. E.g., samp = 3600 for 1 sampling occasion every hour
-#' @param samplength The desired length of each sampling occasion in seconds.
-#' @param camareas A dataframe made by a_lookup_fn or similar (with columns cam and a).
+#' @param count_col The name of the column containing the count of animals
+#' @param samp How often to sample, in seconds. E.g., samp = 3600 for 1 sampling occasion every hour
+#' @param samp_length The desired length of each sampling occasion, in seconds. E.g., 
+#' samp_length = 10 for sampling occasions that last 10 seconds
+#' @param cam_areas A dataframe made by a_lookup_fn or similar (with columns cam and a).
 #'  Must have one row per active camera and that camera's area (a)
-#' @param datelim A vector of length 2 of class POSIXct. The first and last date of the
+#' @param date_lim A vector of length 2 of class POSIXct. The first and last date of the
 #' desired sampling period.
 #' @param A The size of the study area (same units as a)
 #'
@@ -35,33 +36,34 @@
 #' tab <- a_lookup_fn(df)
 #' d <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
 #' ste_data_fn(df,
-#'             countcol = "count",
+#'             count_col = "count",
 #'             samp = 3600,
-#'             samplength = 10,
-#'             camareas = tab,
-#'             datelim = d)
-ste_data_fn <- function(x, countcol, samp, samplength, camareas, datelim, A){
+#'             samp_length = 10,
+#'             cam_areas = tab,
+#'             date_lim = d,
+#'             A = 150000)
+ste_data_fn <- function(x, count_col, samp, samp_length, cam_areas, date_lim, A){
 
   # Make sure time zones match
-  stopifnot(lubridate::tz(datelim) == lubridate::tz(x$datetime))
+  stopifnot(lubridate::tz(date_lim) == lubridate::tz(x$datetime))
 
   # Create a vector of sampling start times
   st <- sampling_start(samp = samp,
-                       datelim = datelim)
+                       date_lim = date_lim)
 
   # Find pictures WITH animals that are actually in a sampling period
   tmp <- x %>%
-    dplyr::mutate(timer = diff_fn(datetime, st, interval_length = samplength),
+    dplyr::mutate(timer = diff_fn(datetime, st, interval_length = samp_length),
            timer = as.POSIXct(timer, origin = "1970-01-01 00:00:00",
                               tz = lubridate::tz(x$datetime)) ) %>%
     dplyr::filter(!is.na(timer),
-           .[, which(names(.) == countcol)] > 0 ) %>% # where count > 0
+           .[, which(names(.) == count_col)] > 0 ) %>% # where count > 0
     dplyr::mutate(event = as.numeric(as.factor(.$timer))) # Give each event a number
 
   # For events WITH a picture, find the space-to-event
   out <- rep(NA, length(unique(tmp$event)))
   for(i in 1:length(unique(tmp$event))){
-    cc <- sample(camareas$cam, length(camareas$cam), replace = F)
+    cc <- sample(cam_areas$cam, length(cam_areas$cam), replace = F)
     tmp2 <- tmp %>%
       dplyr::filter(event == i) %>%
       dplyr::rowwise() %>%
@@ -69,7 +71,7 @@ ste_data_fn <- function(x, countcol, samp, samplength, camareas, datelim, A){
       dplyr::ungroup() %>%
       dplyr::group_by(event) %>%
       dplyr::summarise(camtoevent = min(camtoevent)) %>%
-      dplyr::mutate(areatoevent = sum(camareas$a[1:camtoevent]) ) %>%
+      dplyr::mutate(areatoevent = sum(cam_areas$a[1:camtoevent]) ) %>%
       .$areatoevent
     out[i] <- tmp2
   }
@@ -81,7 +83,7 @@ ste_data_fn <- function(x, countcol, samp, samplength, camareas, datelim, A){
     dplyr::mutate(pics = NA) %>%
     .$pics
   dat.ste <- list(toevent = matrix(c(out, yy), nrow = 1),
-                  censor = sum(camareas$a),
+                  censor = sum(cam_areas$a),
                   A = A
   )
 

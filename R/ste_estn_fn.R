@@ -1,5 +1,6 @@
-# Estimate abundance from STE
-#' Title
+#' Estimate abundance from STE
+#' 
+#' A function to estimate abundance from an STE encounter history
 #'
 #' @param x A list formulated by ste_data_fn or tte_data_fn. 
 #' x$toevent is a matrix with space- or time-to-event and NAs.
@@ -20,11 +21,11 @@
 #' tab <- a_lookup_fn(df)
 #' d <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
 #' dat.ste <- ste_data_fn(df,
-#'             countcol = "count",
+#'             count_col = "count",
 #'             samp = 3600,
-#'             samplength = 10,
-#'             camareas = tab,
-#'             datelim = d,
+#'             samp_length = 10,
+#'             cam_areas = tab,
+#'             date_lim = d,
 #'             A = 150000)
 #' ste_estN_fn(dat.ste)
 ste_estN_fn <- function(x){

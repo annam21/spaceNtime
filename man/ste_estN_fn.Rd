@@ -2,7 +2,7 @@
 % Please edit documentation in R/ste_estn_fn.R
 \name{ste_estN_fn}
 \alias{ste_estN_fn}
-\title{Title}
+\title{Estimate abundance from STE}
 \usage{
 ste_estN_fn(x)
 }
@@ -16,7 +16,7 @@ x$A is the size of the study area, in the same units as a}
 A list, with the estimated abundance with its standard error and confidence intervals.
 }
 \description{
-Title
+A function to estimate abundance from an STE encounter history
 }
 \examples{
 df <- data.frame(cam = c(1,1,2,2),
@@ -30,11 +30,11 @@ df <- data.frame(cam = c(1,1,2,2),
 tab <- a_lookup_fn(df)
 d <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
 dat.ste <- ste_data_fn(df,
-            countcol = "count",
+            count_col = "count",
             samp = 3600,
-            samplength = 10,
-            camareas = tab,
-            datelim = d,
+            samp_length = 10,
+            cam_areas = tab,
+            date_lim = d,
             A = 150000)
 ste_estN_fn(dat.ste)
 }

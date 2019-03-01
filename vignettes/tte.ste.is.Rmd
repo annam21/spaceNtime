@@ -21,7 +21,7 @@ The package TTE.STE.IS was created to assist with analyses described in "Three n
 This is my first package and is very much in development, so it is guaranteed to have bugs. I would appreciate hearing from you if you encounter problems!
 
 ## Load the package
-If you haven't already installed it, please see instructions at the bottom of [my repository](https://github.com/annam21/TTE.STE.IS)
+If you haven't already installed it, please see instructions at the bottom of my [Github repository](https://github.com/annam21/TTE.STE.IS)
 ```{r, message = F}
 library(TTE.STE.IS)
 ```
@@ -32,49 +32,54 @@ library(TTE.STE.IS)
 ### Initial database
 
 The functions for all three methods are built from a camera database of the following form. 
-```{r, echo = F}
+```{r}
 df <- data.frame(cam = c(1,1,2,2),
-             datetime = as.POSIXct(c("2016-01-02 12:00:00",
+                 datetime = as.POSIXct(c("2016-01-02 12:00:00",
                                      "2016-01-03 13:12:00",
                                      "2016-01-02 14:00:00",
                                      "2016-01-03 16:53:42"),
                                     tz = "GMT"),
-                   a = c(850, 850, 1100, 1100),
-                   count = c(1, 0, 0, 2))
-
-knitr::kable(df)
+                 a = c(850, 850, 1100, 1100),
+                 count = c(1, 0, 0, 2))
 ```
+`r knitr::kable(df, caption = "df")`
 
 As shown above, the database must contain the following columns (at a minimum, and in any order):
- - cam (name must be exact). This is the unique ID of the sampling site. This column can be any class of object
- - datetime (name must be exact). This is the date and time of the photo, in class POSIXct
- - a (name must be exact). This is the viewable area of that camera at that date and time. Class numeric. This column is optional if you create your camera area database through different means than a_lookup_fn (described below)
+
+- cam (name must be exact). This is the unique ID of the sampling site. This column can be any class of object
+
+- datetime (name must be exact). This is the date and time of the photo, in class POSIXct
+
+- a (name must be exact). This is the viewable area of that camera at that date and time. Class numeric. This column is optional if you create your camera area database through different means than a_lookup_fn (described below)
+
  - count. This can actually be named anything, but should be numeric. It is the count of the study species in the photo of interest. 
  
 ### Camera areas 
 We also need a database of the area of each camera.
+
 ```{r}
 lu <- a_lookup_fn(df)
 ```
 
 `r knitr::kable(lu)`
-You can create this yourself or using the function a_lookup_fn (if your database includes the column a). The important thing to note is that this should include all cameras that were functioning during the sampling period, not just ones that took pictures of the target species. Currently, this package is not built to account for cameras that were functioning during part of the sampling period or cameras whose area changes, but those are coming in future iterations.  
+You can create this yourself or by using the function a_lookup_fn (if your database includes the column a). The important thing to note is that this should include all cameras that were functioning during the sampling period, not just ones that took pictures of the target species. Currently, this package is not built to account for cameras that were functioning during part of the sampling period or cameras whose area changes, but those are coming in future iterations.  
 
 ## Time-to-Event
 This is in progress. No code yet.
 
 ## Space-to-Event
 ### Encounter history
-To create your STE encounter history, you must define the first and last days of your study period, and then use the functions ste_data_fn (see its documentation for more details).
+To create your STE encounter history, you must define the first and last days of your study period, and then use the function ste_data_fn (see its documentation for more details)(i.e., `?ste_data_fn`).
 ```{r}
-d <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
+dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
 dat.ste <- ste_data_fn(df,
-             countcol = "count",
-             samp = 3600,
-             samplength = 10,
-             camareas = lu,
-             datelim = d,
-             A = 150000)
+                       count_col = "count",
+                       samp = 3600,
+                       samp_length = 10,
+                       cam_areas = lu,
+                       date_lim = dates,
+                       A = 150000)
+dat.ste
 ```
 
 ### Estimate abundance
