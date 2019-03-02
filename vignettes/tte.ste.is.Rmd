@@ -79,7 +79,6 @@ dat.ste <- ste_data_fn(df,
                        cam_areas = lu,
                        date_lim = dates,
                        A = 150000)
-dat.ste
 ```
 
 ### Estimate abundance
