@@ -79,13 +79,16 @@ dat.ste <- ste_data_fn(df,
                        cam_areas = lu,
                        date_lim = dates,
                        A = 150000)
+dat.ste
 ```
+
 
 ### Estimate abundance
 To estimate abundance from STE, use the function ste_estN_fn
 ```{r}
 ste_estN_fn(dat.ste)
 ```
+
 This will always produce a warning about Nelder-Mead. In future versions of this package, you may be able to change your optimization method. 
 
 
