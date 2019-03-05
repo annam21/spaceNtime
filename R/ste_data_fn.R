@@ -11,7 +11,7 @@
 #' @param x A dataframe with columns named cam (any class) and datetime (class POSIXct)
 #' and a column (any name) of the count of target species in each photo.
 #' @param count_col The name of the column containing the count of animals
-#' @param samp How often to sample, in seconds. E.g., samp = 3600 for 1 sampling occasion every hour
+#' @param samp_freq How often to sample, in seconds. E.g., samp_freq = 3600 for 1 sampling occasion every hour
 #' @param samp_length The desired length of each sampling occasion, in seconds. E.g., 
 #' samp_length = 10 for sampling occasions that last 10 seconds
 #' @param cam_areas A dataframe made by a_lookup_fn or similar (with columns cam and a).
@@ -37,18 +37,18 @@
 #' d <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
 #' ste_data_fn(df,
 #'             count_col = "count",
-#'             samp = 3600,
+#'             samp_freq = 3600,
 #'             samp_length = 10,
 #'             cam_areas = tab,
 #'             date_lim = d,
 #'             A = 150000)
-ste_data_fn <- function(x, count_col, samp, samp_length, cam_areas, date_lim, A){
+ste_data_fn <- function(x, count_col, samp_freq, samp_length, cam_areas, date_lim, A){
 
   # Make sure time zones match
   stopifnot(lubridate::tz(date_lim) == lubridate::tz(x$datetime))
   
   # Create a vector of sampling start times
-  st <- sampling_start(samp = samp,
+  st <- sampling_start(samp_freq = samp_freq,
                        date_lim = date_lim)
   
   # Find pictures WITH animals that are actually in a sampling period
