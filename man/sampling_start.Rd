@@ -4,10 +4,10 @@
 \alias{sampling_start}
 \title{Create sequence of start times}
 \usage{
-sampling_start(samp, date_lim)
+sampling_start(samp_freq, date_lim)
 }
 \arguments{
-\item{samp}{The number of seconds between each sampling period}
+\item{samp_freq}{The number of seconds between each sampling period}
 
 \item{date_lim}{A vector of length 2 of class POSIXct. The first and last date of the
 desired sampling period.}
@@ -17,7 +17,7 @@ A sequence of dates
 }
 \description{
 Create a sequence of start times by defining the amount of time between each, in seconds.
-E.g., samp = 3600 for sampling once per hour.
+E.g., samp_freq = 3600 for sampling once per hour.
 }
 \examples{
 d <- c(Sys.time()-43200, Sys.time())
