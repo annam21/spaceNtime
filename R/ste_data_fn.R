@@ -57,7 +57,7 @@ ste_data_fn <- function(x, count_col, samp_freq, samp_length, cam_areas, date_li
                   timer = as.POSIXct(timer, origin = "1970-01-01 00:00:00",
                                      tz = lubridate::tz(x$datetime)) ) %>%
     dplyr::filter(!is.na(timer),
-                  .[, which(names(.) == count_col)] > 0 ) %>% # where count > 0
+                  !!as.name(count_col) > 0 ) %>% # where count > 0
     dplyr::mutate(event = as.numeric(as.factor(.$timer))) # Give each event a number
   
   # For events WITH a picture, find the space-to-event
