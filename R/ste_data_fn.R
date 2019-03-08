@@ -80,8 +80,8 @@ ste_data_fn <- function(x, count_col, samp_freq, samp_length, cam_areas, date_li
       out[i,] <- tmp2
     }
   } else {
-    out <- NULL
     warning("No animals detected in any sampling occasion")
+    out <- NULL
   }
   
   # For events WITHOUT a picture, add in an NA
