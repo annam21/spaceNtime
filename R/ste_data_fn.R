@@ -53,6 +53,7 @@ ste_data_fn <- function(x, count_col, samp_freq, samp_length, cam_areas, date_li
   
   # Find pictures WITH animals that are actually in a sampling period
   tmp <- x %>%
+    dplyr::ungroup() %>% 
     dplyr::mutate(timer = diff_fn(datetime, st, interval_length = samp_length),
                   timer = as.POSIXct(timer, origin = "1970-01-01 00:00:00",
                                      tz = lubridate::tz(x$datetime)) ) %>%
