@@ -92,7 +92,6 @@ ste_data_fn <- function(x, count_col, samp_freq, samp_length, cam_areas, date_li
     dplyr::bind_rows(., out) %>% 
     dplyr::arrange(datetime) %>% 
     tidyr::spread(datetime, areatoevent) %>%
-    dplyr::select(-toevent) %>%
     as.matrix()
   
   dat.ste <- list(toevent = toevent,
