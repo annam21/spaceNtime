@@ -1,11 +1,11 @@
 #' Estimate abundance from STE
-#' 
+#'
 #' A function to estimate abundance from an STE encounter history
 #'
-#' @param x A list formulated by ste_data_fn or tte_data_fn. 
+#' @param x A list formulated by ste_data_fn or tte_data_fn.
 #' x$toevent is a matrix with space- or time-to-event and NAs.
 #' x$censor is the censor
-#' x$A is the size of the study area, in the same units as a 
+#' x$A is the size of the study area, in the same units as a
 #' @return A list, with the estimated abundance with its standard error and confidence intervals.
 #' @export
 #'
@@ -28,25 +28,28 @@
 #'             date_lim = d,
 #'             A = 150000)
 #' ste_estN_fn(dat.ste)
-ste_estN_fn <- function(x){
-  opt <- stats::optim(log(1/mean(x$toevent, na.rm = T)), 
-               exp_logl_fn, 
-               x = x, 
-               control = list(fnscale = -1),
-               hessian = T)
+ste_estN_fn <- function(x) {
+  opt <- stats::optim(log(1 / mean(x$toevent, na.rm = T)),
+    exp_logl_fn,
+    x = x,
+    control = list(fnscale = -1),
+    hessian = T
+  )
   # Estimate of lambda
   estlam <- exp(opt$par)
-  
+
   # estlam is average density per m2
   estN <- estlam * x$A
-  
+
   # Delta method for variance
   varB <- -1 * MASS::ginv(opt$hessian)
   form <- sprintf("~ %f * exp(x1)", x$A)
   SE_N <- msm::deltamethod(g = stats::as.formula(form), mean = opt$par, cov = varB, ses = T)
-  
-  return(list(estN = estN,
-              SE_N = SE_N,
-              LCI = estN - SE_N * 1.96,
-              UCI  = estN + SE_N * 1.96) )
+
+  return(list(
+    estN = estN,
+    SE_N = SE_N,
+    LCI = estN - SE_N * 1.96,
+    UCI = estN + SE_N * 1.96
+  ))
 }

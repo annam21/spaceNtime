@@ -11,7 +11,7 @@
 #' @examples
 #' x <- seq(-2, 2, by = 1)
 #' only_pos(x)
-only_pos <- function(x){
+only_pos <- function(x) {
   out <- replace(x, x < 0, NA)
   return(out)
 }

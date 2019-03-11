@@ -14,7 +14,7 @@ and a column (any name) of the count of target species in each photo.}
 
 \item{samp_freq}{How often to sample, in seconds. E.g., samp_freq = 3600 for 1 sampling occasion every hour}
 
-\item{samp_length}{The desired length of each sampling occasion, in seconds. E.g., 
+\item{samp_length}{The desired length of each sampling occasion, in seconds. E.g.,
 samp_length = 10 for sampling occasions that last 10 seconds}
 
 \item{cam_areas}{A dataframe made by a_lookup_fn or similar (with columns cam and a).

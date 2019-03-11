@@ -15,7 +15,7 @@
 #' d <- c(Sys.time()-43200, Sys.time())
 #' sampling_start(3600, d)
 #'
-sampling_start <- function(samp_freq, date_lim){
+sampling_start <- function(samp_freq, date_lim) {
 
   # Make sure date_lim is the right dimension and class
   stopifnot(is.null(date_lim) | length(date_lim) == 2)

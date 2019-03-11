@@ -7,7 +7,7 @@
 ste_estN_fn(x)
 }
 \arguments{
-\item{x}{A list formulated by ste_data_fn or tte_data_fn. 
+\item{x}{A list formulated by ste_data_fn or tte_data_fn.
 x$toevent is a matrix with space- or time-to-event and NAs.
 x$censor is the censor
 x$A is the size of the study area, in the same units as a}

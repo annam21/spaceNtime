@@ -12,7 +12,7 @@
 #' and a column (any name) of the count of target species in each photo.
 #' @param count_col The name of the column containing the count of animals
 #' @param samp_freq How often to sample, in seconds. E.g., samp_freq = 3600 for 1 sampling occasion every hour
-#' @param samp_length The desired length of each sampling occasion, in seconds. E.g., 
+#' @param samp_length The desired length of each sampling occasion, in seconds. E.g.,
 #' samp_length = 10 for sampling occasions that last 10 seconds
 #' @param cam_areas A dataframe made by a_lookup_fn or similar (with columns cam and a).
 #'  Must have one row per active camera and that camera's area (a)
@@ -22,7 +22,7 @@
 #'
 #' @return A list with the encounter history for an STE model.
 #' @export
-#' @importFrom magrittr "%>%" 
+#' @importFrom magrittr "%>%"
 #'
 #' @examples
 #' df <- data.frame(cam = c(1,1,2,2),
@@ -42,30 +42,40 @@
 #'             cam_areas = tab,
 #'             date_lim = d,
 #'             A = 150000)
-ste_data_fn <- function(x, count_col, samp_freq, samp_length, cam_areas, date_lim, A){
+ste_data_fn <- function(x, count_col, samp_freq, samp_length, cam_areas, date_lim, A) {
 
   # Make sure time zones match
   stopifnot(lubridate::tz(date_lim) == lubridate::tz(x$datetime))
-  
+
   # Create a vector of sampling start times
-  st <- sampling_start(samp_freq = samp_freq,
-                       date_lim = date_lim)
-  
+  st <- sampling_start(
+    samp_freq = samp_freq,
+    date_lim = date_lim
+  )
+
   # Find pictures WITH animals that are actually in a sampling period
   tmp <- x %>%
     dplyr::ungroup() %>% # safeguard for incoming data
-    dplyr::mutate(timer = diff_fn(datetime, st, interval_length = samp_length),
-                  timer = as.POSIXct(timer, origin = "1970-01-01 00:00:00",
-                                     tz = lubridate::tz(x$datetime)) ) %>%
-    dplyr::filter(!is.na(timer),
-                  !!as.name(count_col) > 0 ) %>% # where count > 0
+    diff_fn(st, samp_length) %>%
+    dplyr::mutate(
+      timer = as.POSIXct(timer,
+        origin = "1970-01-01 00:00:00",
+        tz = lubridate::tz(x$datetime)
+      )
+    ) %>%
+    dplyr::filter(
+      !is.na(timer),
+      !!as.name(count_col) > 0
+    ) %>% # where count > 0
     dplyr::mutate(event = as.numeric(as.factor(.$timer))) # Give each event a number
-  
+
   # For events WITH a picture, find the space-to-event
-  out <- data.frame(datetime = as.POSIXct(NA), 
-                    areatoevent = NA)
-  if(nrow(tmp) >0){
-    for(i in 1:length(unique(tmp$event))){
+  out <- data.frame(
+    datetime = as.POSIXct(NA),
+    areatoevent = NA
+  )
+  if (nrow(tmp) > 0) {
+    for (i in 1:length(unique(tmp$event))) {
       cc <- sample(cam_areas$cam, length(cam_areas$cam), replace = F)
       tmp2 <- tmp %>%
         dplyr::filter(event == i) %>%
@@ -73,30 +83,33 @@ ste_data_fn <- function(x, count_col, samp_freq, samp_length, cam_areas, date_li
         dplyr::mutate(camtoevent = which(cc == cam)) %>%
         dplyr::ungroup() %>%
         dplyr::group_by(event) %>%
-        dplyr::summarise(camtoevent = min(camtoevent),
-                         datetime = dplyr::first(datetime)) %>%
-        dplyr::mutate(areatoevent = sum(cam_areas$a[1:camtoevent]) ) %>%
-        dplyr::select(datetime, areatoevent) 
-      out[i,] <- tmp2
+        dplyr::summarise(
+          camtoevent = min(camtoevent),
+          datetime = dplyr::first(datetime)
+        ) %>%
+        dplyr::mutate(areatoevent = sum(cam_areas$a[1:camtoevent])) %>%
+        dplyr::select(datetime, areatoevent)
+      out[i, ] <- tmp2
     }
   } else {
     warning("No animals detected in any sampling occasion")
     out <- NULL
   }
-  
+
   # For events WITHOUT a picture, add in an NA
   idf <- data.frame("datetime" = st)
   toevent <- idf %>%
     dplyr::anti_join(., tmp, by = c("datetime" = "timer")) %>%
     dplyr::mutate(areatoevent = NA) %>%
-    dplyr::bind_rows(., out) %>% 
-    dplyr::arrange(datetime) %>% 
+    dplyr::bind_rows(., out) %>%
+    dplyr::arrange(datetime) %>%
     tidyr::spread(datetime, areatoevent) %>%
     as.matrix()
-  
-  dat.ste <- list(toevent = toevent,
-                  censor = sum(cam_areas$a),
-                  A = A
+
+  dat.ste <- list(
+    toevent = toevent,
+    censor = sum(cam_areas$a),
+    A = A
   )
 
   return(dat.ste)

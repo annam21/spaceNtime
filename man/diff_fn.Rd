@@ -21,8 +21,8 @@ Used within mutate, this function creates a new column with the first value of y
 where x-y is less than or equal to a specified interval.
 }
 \examples{
-df <- data.frame(ID = 1:4, Value = c(1, 5, 10, 8))
+df <- data.frame(ID = 1:6, datetime = c(1, 2, 5, 6, 10, 8))
 y <- c(2,4,6,8)
-dplyr::mutate(df, newcol = diff_fn(Value, y, 1))
+diff_fn(df, y, 1)
 
 }

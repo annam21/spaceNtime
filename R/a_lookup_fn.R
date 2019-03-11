@@ -10,7 +10,7 @@
 #'
 #' @return A dataframe with one row per camera, and its area
 #' @export
-#' @importFrom magrittr "%>%" 
+#' @importFrom magrittr "%>%"
 #'
 #' @examples
 #' df <- data.frame(cam = c(1,1,2,2),
@@ -22,8 +22,8 @@
 #'                  a = c(850, 850, 1100, 1100),
 #'                  count = c(1, 0, 0, 2))
 #' a_lookup_fn(df)
-a_lookup_fn <- function(x){
+a_lookup_fn <- function(x) {
   x %>%
-  dplyr::group_by(cam) %>%
-  dplyr::summarise(a = dplyr::first(a))
+    dplyr::group_by(cam) %>%
+    dplyr::summarise(a = dplyr::first(a))
 }

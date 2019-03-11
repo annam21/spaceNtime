@@ -12,14 +12,21 @@
 #' @export
 #'
 #' @examples
-#' df <- data.frame(ID = 1:4, Value = c(1, 5, 10, 8))
+#' df <- data.frame(ID = 1:6, datetime = c(1, 2, 5, 6, 10, 8))
 #' y <- c(2,4,6,8)
-#' dplyr::mutate(df, newcol = diff_fn(Value, y, 1))
+#' diff_fn(df, y, 1)
 #'
-diff_fn <- function(x, y, interval_length){
-  # For every x, pull out the first y where
-  purrr::map_dbl(x,
-          ~ subset(y, (only_pos(as.numeric(.x) -
-                                  as.numeric(y)) <= interval_length))[1]
-  )
+diff_fn <- function(x, y, interval_length) {
+  out <- x %>%
+    #  Throw out images taken before or after interval of interest
+    dplyr::filter(dplyr::between(datetime, min(y), max(y))) %>%
+    dplyr::mutate(
+      #  Find corresponding interval for each image
+      Bin = findInterval(datetime, y),
+      #  Replace no match value (0) with NA
+      Bin = replace(Bin, Bin == 0, NA_real_),
+      timer = y[Bin]
+    ) %>%
+    dplyr::filter((datetime - timer) < interval_length) %>%
+    dplyr::select(-Bin)
 }
