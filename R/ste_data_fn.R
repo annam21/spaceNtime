@@ -111,6 +111,5 @@ ste_data_fn <- function(x, count_col, samp_freq, samp_length, cam_areas, date_li
     censor = sum(cam_areas$a),
     A = A
   )
-
   return(dat.ste)
 }
