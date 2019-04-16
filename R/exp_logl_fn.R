@@ -46,7 +46,7 @@ exp_logl_fn <- function(x, param){
       if(!is.na(x$toevent[i, j])) {
         tmp <- dexp(x$toevent[i, j], lambda)
       } else {
-        tmp <- pexp(x$censor, lambda, lower.tail = F)
+        tmp <- pexp(x$censor[j], lambda, lower.tail = F)
       }
       logL <- logL + log(tmp)
     }

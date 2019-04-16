@@ -96,7 +96,7 @@ ste_data_fn <- function(x, count_col, samp_freq, samp_length, cam_areas, date_li
     as.matrix()
   
   dat.ste <- list(toevent = toevent,
-                  censor = sum(cam_areas$a),
+                  censor = rep(sum(cam_areas$a), ncol(toevent)),
                   A = A
   )
 
