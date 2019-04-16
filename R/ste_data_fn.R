@@ -56,7 +56,7 @@ ste_data_fn <- function(x, count_col, samp_freq, samp_length, cam_areas, date_li
     dplyr::ungroup() %>% # safeguard for incoming data
     dplyr::mutate(timer = diff_fn(datetime, st, interval_length = samp_length),
                   timer = as.POSIXct(timer, origin = "1970-01-01 00:00:00",
-                                     tz = lubridate::tz(x$datetime)) ) %>%
+                                     tz = lubridate::tz(.$datetime)) ) %>%
     dplyr::filter(!is.na(timer),
                   !!as.name(count_col) > 0 ) %>% # where count > 0
     dplyr::mutate(event = as.numeric(as.factor(.$timer))) # Give each event a number
