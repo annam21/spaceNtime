@@ -45,8 +45,10 @@ ste_estN_fn <- function(x){
   form <- sprintf("~ %f * exp(x1)", x$A)
   SE_N <- msm::deltamethod(g = stats::as.formula(form), mean = opt$par, cov = varB, ses = T)
   
+  logCI <- exp( 1.96*sqrt(log(1 + (SE_N/estN)^2 )))
+  
   return(list(estN = estN,
               SE_N = SE_N,
-              LCI = estN - SE_N * 1.96,
-              UCI  = estN + SE_N * 1.96) )
+              LCI = estN / logCI,
+              UCI  = estN * logCI ) )
 }
