@@ -23,6 +23,7 @@
 #' @return A list with the encounter history for an STE model.
 #' @export
 #' @importFrom magrittr "%>%" 
+#' @import dplyr
 #'
 #' @examples
 #' df <- data.frame(cam = c(1,1,2,2),
@@ -53,13 +54,13 @@ ste_data_fn <- function(x, count_col, samp_freq, samp_length, cam_areas, date_li
   
   # Find pictures WITH animals that are actually in a sampling period
   tmp <- x %>%
-    dplyr::ungroup() %>% # safeguard for incoming data
-    dplyr::mutate(timer = diff_fn(datetime, st, interval_length = samp_length),
-                  timer = as.POSIXct(timer, origin = "1970-01-01 00:00:00",
+    ungroup() %>% # safeguard for incoming data
+    mutate(timer = diff_fn(datetime, st, interval_length = samp_length),
+           timer = as.POSIXct(timer, origin = "1970-01-01 00:00:00",
                                      tz = lubridate::tz(.$datetime)) ) %>%
-    dplyr::filter(!is.na(timer),
-                  !!as.name(count_col) > 0 ) %>% # where count > 0
-    dplyr::mutate(event = as.numeric(as.factor(.$timer))) # Give each event a number
+    filter(!is.na(timer),
+          !!as.name(count_col) > 0 ) %>% # where count > 0
+    mutate(event = as.numeric(as.factor(.$timer))) # Give each event a number
   
   # For events WITH a picture, find the space-to-event
   out <- data.frame(datetime = as.POSIXct(NA), 
@@ -68,15 +69,15 @@ ste_data_fn <- function(x, count_col, samp_freq, samp_length, cam_areas, date_li
     for(i in 1:length(unique(tmp$event))){
       cc <- sample(cam_areas$cam, length(cam_areas$cam), replace = F)
       tmp2 <- tmp %>%
-        dplyr::filter(event == i) %>%
-        dplyr::rowwise() %>%
-        dplyr::mutate(camtoevent = which(cc == cam)) %>%
-        dplyr::ungroup() %>%
-        dplyr::group_by(event) %>%
-        dplyr::summarise(camtoevent = min(camtoevent),
-                         datetime = dplyr::first(datetime)) %>%
-        dplyr::mutate(areatoevent = sum(cam_areas$a[1:camtoevent]) ) %>%
-        dplyr::select(datetime, areatoevent) 
+        filter(event == i) %>%
+        rowwise() %>%
+        mutate(camtoevent = which(cc == cam)) %>%
+        ungroup() %>%
+        group_by(event) %>%
+        summarise(camtoevent = min(camtoevent),
+                 datetime = dplyr::first(datetime)) %>%
+        mutate(areatoevent = sum(cam_areas$a[1:camtoevent]) ) %>%
+        select(datetime, areatoevent) 
       out[i,] <- tmp2
     }
   } else {
@@ -87,10 +88,10 @@ ste_data_fn <- function(x, count_col, samp_freq, samp_length, cam_areas, date_li
   # For events WITHOUT a picture, add in an NA
   idf <- data.frame("datetime" = st)
   toevent <- idf %>%
-    dplyr::anti_join(., tmp, by = c("datetime" = "timer")) %>%
-    dplyr::mutate(areatoevent = NA) %>%
-    dplyr::bind_rows(., out) %>% 
-    dplyr::arrange(datetime) %>% 
+    anti_join(., tmp, by = c("datetime" = "timer")) %>%
+    mutate(areatoevent = NA) %>%
+    bind_rows(., out) %>% 
+    arrange(datetime) %>% 
     tidyr::spread(datetime, areatoevent) %>%
     as.matrix()
   
