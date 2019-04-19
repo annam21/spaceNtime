@@ -8,9 +8,11 @@ Description: This package contains code to run Time-to-Event, Space-to-Event, an
     from a camera database. To make an encounter history, it currently requires:
     1) a camera database with the following columns: cam (unique ID for the camera; any class), 
     datetime (class POSIXct), and count (the number of the study species seen in each picture; class numeric)
-    2) a dataframe with two columns: cam (unique ID for the camera; any class) 
-    and a (area of the camera, class numeric).
-    Disclaimer! This package is currently in development and probably buggy.  
+    2) a deployment database with information regarding the area and functionality of ALL active 
+    cameras during your study. It has four columns: cam (unique ID for the camera; any class), 
+    start and end (representing the dates that each camera was active; both POSIXct), and area 
+    (camera area during each of those intervals, class numeric). This dataframe should 
+    Disclaimer! This package is currently in development and probably buggy.
 Depends: R (>= 3.5.1)
 License: MIT License
 Encoding: UTF-8
@@ -19,5 +21,6 @@ RoxygenNote: 6.1.1
 Imports: magrittr, dplyr, tidyr, purrr, lubridate, MASS, stats, msm
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat
 VignetteBuilder: knitr
