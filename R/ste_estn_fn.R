@@ -2,37 +2,51 @@
 #' 
 #' A function to estimate abundance from an STE encounter history
 #'
-#' @param x A list formulated by ste_data_fn or tte_data_fn. 
-#' x$toevent is a matrix with space- or time-to-event and NAs.
-#' x$censor is the censor
-#' x$A is the size of the study area, in the same units as a 
+#' @param x A dataframe formulated by ste_data_fn or tte_data_fn.
+#' @param study_area the size of the study area (same units as camera viewshed)
 #' @return A list, with the estimated abundance with its standard error and confidence intervals.
 #' @export
 #'
 #' @examples
-#' df <- data.frame(cam = c(1,1,2,2),
-#'             datetime = as.POSIXct(c("2016-01-02 12:00:00",
-#'                                     "2016-01-03 13:12:00",
-#'                                     "2016-01-02 14:00:00",
-#'                                     "2016-01-03 16:53:42"),
-#'                                    tz = "GMT"),
-#'                   a = c(850, 850, 1100, 1100),
-#'                   count = c(1, 0, 0, 2))
-#' tab <- a_lookup_fn(df)
-#' d <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
-#' dat.ste <- ste_data_fn(df,
-#'             count_col = "count",
-#'             samp = 3600,
+#' df <- data.frame(
+#'   cam = c(1,1,2,2,2),
+#'   datetime = as.POSIXct(c("2016-01-02 12:00:00",
+#'                         "2016-01-03 13:12:00",
+#'                         "2016-01-02 12:00:00",
+#'                         "2016-01-02 14:00:00",
+#'                         "2016-01-03 16:53:42"),
+#'                       tz = "GMT"),
+#'   count = c(1, 0, 2, 1, 2)
+#' )
+#' deploy <- data.frame(
+#'   cam = c(1, 2, 2, 2),
+#'   start = as.POSIXct(c("2015-12-01 15:00:00",
+#'                        "2015-12-08 00:00:00", 
+#'                        "2016-01-01 00:00:00", 
+#'                        "2016-01-02 00:00:00"),
+#'                      tz = "GMT"),
+#'   end = as.POSIXct(c("2016-01-05 00:00:00", 
+#'                      "2015-12-19 03:30:00", 
+#'                      "2016-01-01 05:00:00",
+#'                      "2016-01-05 00:00:00"), 
+#'                    tz = "GMT"),
+#'   area = c(300, 200, 200, 450)
+#' )
+#'occ <- build_occ(samp_freq = 3600, 
 #'             samp_length = 10,
-#'             cam_areas = tab,
-#'             date_lim = d,
-#'             A = 150000)
-#' ste_estN_fn(dat.ste)
-ste_estN_fn <- function(x){
+#'             study_start = study_dates[1],
+#'             study_end = study_dates[2])
+#' build_ste_eh(df, deploy, occ)
+#' ste_estN_fn(dat.ste, study_area = 1e6)
+ste_estN_fn <- function(x, study_area){
+  
+  dat <- list(toevent = matrix(x$STE, nrow = 1),
+              censor = x$censor)
+  
   opt <- suppressWarnings(
-    stats::optim(log(1/mean(x$toevent, na.rm = T)), 
+    stats::optim(log(1/mean(dat$toevent, na.rm = T)), 
                exp_logl_fn, 
-               x = x, 
+               x = dat, 
                control = list(fnscale = -1),
                hessian = T)
   )
@@ -41,11 +55,11 @@ ste_estN_fn <- function(x){
   estlam <- exp(opt$par)
   
   # estlam is average density per m2
-  estN <- estlam * x$A
+  estN <- estlam * study_area
   
   # Delta method for variance
   varB <- -1 * MASS::ginv(opt$hessian)
-  form <- sprintf("~ %f * exp(x1)", x$A)
+  form <- sprintf("~ %f * exp(x1)", study_area)
   SE_N <- msm::deltamethod(g = stats::as.formula(form), mean = opt$par, cov = varB, ses = T)
   
   logCI <- exp( 1.96*sqrt(log(1 + (SE_N/estN)^2 )))

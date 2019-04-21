@@ -14,23 +14,9 @@
 #' @export
 #'
 #' @examples
-#' df <- data.frame(cam = c(1,1,2,2),
-#'             datetime = as.POSIXct(c("2016-01-02 12:00:00",
-#'                                     "2016-01-03 13:12:00",
-#'                                     "2016-01-02 14:00:00",
-#'                                     "2016-01-03 16:53:42"),
-#'                                    tz = "GMT"),
-#'                   a = c(850, 850, 1100, 1100),
-#'                   count = c(1, 0, 0, 2))
-#' tab <- a_lookup_fn(df)
-#' d <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
-#' dat.ste <- ste_data_fn(df,
-#'             countcol = "count",
-#'             samp = 3600,
-#'             samplength = 10,
-#'             camareas = tab,
-#'             datelim = d,
-#'             A = 150000)
+#' x <- build_ste_eh(df, deploy, occ)
+#' dat.ste <- list(toevent = matrix(x$STE, nrow = 1),
+#'                 censor = x$censor)
 #' optim(log(1/mean(dat.ste$toevent, na.rm = T)), 
 #'              exp_logl_fn, 
 #'              x = dat.ste, 

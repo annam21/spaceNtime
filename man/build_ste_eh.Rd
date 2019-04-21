@@ -4,7 +4,7 @@
 \alias{build_ste_eh}
 \title{Build STE encounter history}
 \usage{
-build_ste_eh(df, deploy, occ, study_area)
+build_ste_eh(df, deploy, occ)
 }
 \arguments{
 \item{df}{df object}
@@ -12,8 +12,6 @@ build_ste_eh(df, deploy, occ, study_area)
 \item{deploy}{deploy object}
 
 \item{occ}{tibble or dataframe specifying sampling occasions}
-
-\item{study_area}{the size of the study area (same units as camera viewshed)}
 }
 \value{
 a list, for feeding into ste_estn_fn
@@ -50,6 +48,6 @@ occ <- build_occ(samp_freq = 3600,
             samp_length = 10,
             study_start = study_dates[1],
             study_end = study_dates[2])
-build_ste_eh(df, deploy, occ, study_area = 1e6)
+build_ste_eh(df, deploy, occ)
 
 }

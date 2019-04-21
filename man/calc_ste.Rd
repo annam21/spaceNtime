@@ -13,6 +13,9 @@ calc_ste(df, occ, effort)
 
 \item{effort}{effort from effort_fn()}
 }
+\value{
+a dataframe with the same rows as occ, with a STE column
+}
 \description{
 Calculate STE on each occasion
 }

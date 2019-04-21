@@ -4,7 +4,7 @@
 #' @param occ occasions
 #' @param effort effort from effort_fn()
 #'
-#' @return
+#' @return a dataframe with the same rows as occ, with a STE column
 #' @export
 #' @importFrom lubridate "%within%"
 #'

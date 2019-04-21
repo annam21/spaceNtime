@@ -3,7 +3,6 @@
 #' @param df df object 
 #' @param deploy deploy object
 #' @param occ tibble or dataframe specifying sampling occasions
-#' @param study_area the size of the study area (same units as camera viewshed)
 #'
 #' @return a list, for feeding into ste_estn_fn
 #' @export
@@ -37,17 +36,18 @@
 #'             samp_length = 10,
 #'             study_start = study_dates[1],
 #'             study_end = study_dates[2])
-#' build_ste_eh(df, deploy, occ, study_area = 1e6)
+#' build_ste_eh(df, deploy, occ)
 #' 
-build_ste_eh <- function(df, deploy, occ, study_area){
-  # $df and $effort and $occ from dat
-  # A is your study area size.
- 
-   # Run all my data checks here
+build_ste_eh <- function(df, deploy, occ){
+
+  # Run all my data checks here
   df <- validate_df(df)
   deploy <- validate_deploy(deploy)
   occ <- validate_occ(occ)
   validate_df_deploy(df, deploy) # This one is weird because it doesn't return anything...
+  
+  # I could force a data subset here, but it all hinges on occ. 
+  # If occ is correct, everything else will be. 
   
   # Build effort for each cam at each occasion
   eff <- effort_fn(deploy, occ)
@@ -56,11 +56,8 @@ build_ste_eh <- function(df, deploy, occ, study_area){
   censor <- calc_censor(eff)
 
   # Calculate STE at each occasion
-  tmp <- calc_ste(df, occ, eff)   
+  out <- calc_ste(df, occ, eff)   %>%
+    mutate(censor = censor$censor)
 
-  out <- list(toevent = matrix(tmp$STE, nrow = 1),
-              censor = censor$censor,
-              A = study_area )
-  
   return(out)
 }
