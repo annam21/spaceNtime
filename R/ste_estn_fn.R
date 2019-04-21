@@ -29,11 +29,14 @@
 #'             A = 150000)
 #' ste_estN_fn(dat.ste)
 ste_estN_fn <- function(x){
-  opt <- stats::optim(log(1/mean(x$toevent, na.rm = T)), 
+  opt <- suppressWarnings(
+    stats::optim(log(1/mean(x$toevent, na.rm = T)), 
                exp_logl_fn, 
                x = x, 
                control = list(fnscale = -1),
                hessian = T)
+  )
+  
   # Estimate of lambda
   estlam <- exp(opt$par)
   
