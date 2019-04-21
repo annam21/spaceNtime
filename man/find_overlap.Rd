@@ -15,3 +15,6 @@ a dataframe with any records that are overlapping (grouped by cam)
 \description{
 Find cameras with overlapping intervals
 }
+\examples{
+find_overlap(deploy)  # validation step 
+}

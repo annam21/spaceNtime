@@ -1,13 +1,18 @@
   # Rewrite package entirely, for staggered entry
 
-#' I did it!!!!!!
-#' Tomorrow: 
-#' build in forced data subset 
-#' after subset, check that all cameras in df are in deploy
-#' suppress Nelder-Mead warning
-#' Change exp_logl_fn to take a dataframe
+#' Future plans:
+#' build in forced data subset (skip)
+#' after subset, check that all cameras in df are in deploy (skip, because of timelapse photos)
+#' Change exp_logl_fn to take a dataframe (skip, because not sure how to do for TTE)
+#' Can you go through this whole workflow with a df subset by species? 
+#' Make functions work if you have dates in deploy instead of POSIXct
 #' create a data summary function for the user (maybe: summary(ste_eh) with class "STE")
+#' push to github
+#' change package name
 #' Then move on to ISE! 
+
+
+# data summary for user
 
 
 
@@ -45,48 +50,7 @@
   #                      start = as.Date(c("2015-12-01", "2016-01-01", "2016-01-02")),
   #                      end = as.Date(c("2016-01-05", "2016-01-01", "2016-01-05")),
   #                      area = c(300,300,450))
-  
-  # Workflow
-  
-  # 1) Build occasions
-  study_dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
-  occ <- build_occ(samp_freq = 3600,
-                              samp_length = 10,
-                              study_start = study_dates[1],
-                              study_end = study_dates[2])
-  
-  # 2) Data checks and 3) define effort
-  effort <- effort_fn(df, deploy, occ)
-  # One good place: in build_occ_cam - check occ and deploy
-  
-  # 4)  think the subset check might go here. Make sure all pieces of dat are subset
-  #  Put together data in a list 
-  dat <- list(df = df, deploy = deploy)
-  dat_subset <- mapply(study_subset,
-                       dat_init,
-                       start_col = c("datetime", "start"),
-                       end_col = list(NULL, "end"), # list is key for passing a NULL. can't use c()
-                       study_start = study_dates[1],
-                       study_end = study_dates[2])
-  # study_dates <- as.POSIXct(c("2015-01-05 00:00:00", "2015-01-07 23:59:59"), tz = "GMT")
-  # study_dates <- as.POSIXct(c("2016-01-05 00:00:00", "2016-01-07 23:59:59"), tz = "GMT")
-  
-  # Tests
-  # study_subset(deploy, "start", "end", study_dates[1], study_dates[2])
-  # study_subset(df, "datetime", end_col = NULL, study_dates[1], study_dates[2])
-  
-  # Make your data
-  dat_ste <- ste_data_fn(dat_subset$df, dat_subset$occ, dat_subset$effort, 1e6)
-  
-  # Give the user summaries about their data 
-  
-  # Estimate abundance
-  ste_estN_fn(dat_ste)
-  
 
-  # Can you go through this whole workflow with a df subset by species? 
-  # In the future, I can make exp_logl_fn work on a df. 
-  
   
   
 ################################################################################

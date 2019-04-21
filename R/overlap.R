@@ -27,7 +27,8 @@ overl <- function(one_int, n_int){
 #' @export
 #' @import dplyr
 #'
-#' @examples
+#' @examples 
+#' find_overlap(deploy)  # validation step 
 find_overlap <- function(x){
   x %>%
     assertr::verify(has_all_names("cam", "start", "end")) %>%

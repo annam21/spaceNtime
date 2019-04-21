@@ -110,14 +110,14 @@ occ <- build_occ(samp_freq = 3600,
 With one simple step, you can build your space-to-event encounter history. 
 Be sure to specify your study_area size in the same units as your camera visible areas 
 ```{r}
-ste_eh <- build_ste_eh(df, deploy, occ, study_area = 1e6)
+ste_eh <- build_ste_eh(df, deploy, occ)
 ste_eh
 ```
 
 ### Estimate abundance
 To estimate abundance from STE, use the function ste_estN_fn
 ```{r}
-ste_estN_fn(ste_eh)
+ste_estN_fn(ste_eh, study_area = 1e6)
 ```
 
 This will always produce a warning about Nelder-Mead. In future versions of this package, you may be able to change your optimization method.
