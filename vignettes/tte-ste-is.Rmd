@@ -16,7 +16,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-The package TTE.STE.IS was created to assist with analyses described in ["Three novel methods to estimate abundance of unmarked animals using remote cameras" by Moeller et al. (2018)](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.2331). This package helps the user create an encounter history from a database of analyzed photos and run each of the models. Each of the models (Time-to-Event, Space-to-Event, and Instantaneous Sampling) require different encounter histories and functions, so there is an example of each here. 
+The package TTE.STE.IS was created to assist with analyses described in ["Three novel methods to estimate abundance of unmarked animals using remote cameras" by Moeller et al. (2018)](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.2331). This package helps the user create an encounter history from a database of analyzed photos and run each of the models.
+
+Currently, this package only includes STE, but the other methods are on their way. 
 
 This is my first package and is very much in development, so it is guaranteed to have bugs. I would appreciate hearing from you if you encounter problems!
 
@@ -29,69 +31,98 @@ library(TTE.STE.IS)
 
 ## The data
 
-### Initial database
+The functions for all three methods require two pieces of information.
 
-The functions for all three methods are built from a camera database of the following form. 
+### Photo information
+
+The first, called df, is a data.frame or tibble that contains all your pictures from the study period. This must contain, at a minimum, these three columns (names and classes must match exactly): 
+
+- cam: The unique ID of the sampling site (any class)
+
+- datetime: The date and time of the photo (class POSIXct)
+
+- count: The count of your study species at each date and time (class numeric)
+
 ```{r}
-df <- data.frame(cam = c(1,1,2,2),
-                 datetime = as.POSIXct(c("2016-01-02 12:00:00",
-                                     "2016-01-03 13:12:00",
-                                     "2016-01-02 14:00:00",
-                                     "2016-01-03 16:53:42"),
-                                    tz = "GMT"),
-                 a = c(850, 850, 1100, 1100),
-                 count = c(1, 0, 0, 2))
+df <- data.frame(
+  cam = c(1,1,2,2,2),
+  datetime = as.POSIXct(c("2016-01-02 12:00:00",
+                          "2016-01-03 13:12:00",
+                          "2016-01-02 12:00:00",
+                          "2016-01-02 14:00:00",
+                          "2016-01-03 16:53:42"),
+                        tz = "GMT"),
+  count = c(1, 0, 0, 1, 2)
+)
 ```
 `r knitr::kable(df, caption = "df")`
 
-As shown above, the database must contain the following columns (at a minimum, and in any order):
+### Camera deployment information
 
-- cam (name must be this exactly). This is the unique ID of the sampling site. This column can be any class of object
+The user must also provide a database called deploy. This is a dataframe or tibble that contains information about the active periods for each active camera and their areas. **Please note,** to get accurate estimates, this should include all cameras that were functioning, not just the ones that got pictures of your target species. Each row represents a period of **continuous functionality** for a camera. If a camera ever went offline then came back on, it should have multiple rows. For cameras with multiple entries, the time periods should never overlap. If a camera's area changes, that should be entered as a new row. area = 0 is equivalent to saying the camera was not functioning. 
 
-- datetime (name must be this exactly). This is the date and time of the photo, in class POSIXct
+Deploy must have, at a minimum, these four columns:
 
-- a (name must be this exactly). This is the viewable area of that camera at that date and time. Class numeric. This column is optional if you create your camera area database through different means than a_lookup_fn (described below)
+- cam: The unique ID of the sampling site (same class as df$cam)
 
- - count. This can actually be named anything, but should be numeric. It is the count of the study species in the photo of interest. 
- 
-### Camera areas 
-We also need a database of the area of each camera.
+- start: the first time this camera with this area was active (class POSIXct, same timezone as df$datetime)
+
+- end: the last time this camera with this area was active (class POSIXct, same timezone as df$datetime)
+
+- area: the camera's visible area, in any units (class numeric)
 
 ```{r}
-lu <- a_lookup_fn(df)
+deploy <- data.frame(
+  cam = c(1, 2, 2, 2),
+  start = as.POSIXct(c("2015-12-01 15:00:00",
+                       "2015-12-08 00:00:00", 
+                       "2016-01-01 00:00:00", 
+                       "2016-01-02 00:00:00"),
+                     tz = "GMT"),
+  end = as.POSIXct(c("2016-01-05 00:00:00", 
+                     "2015-12-19 03:30:00", 
+                     "2016-01-01 05:00:00",
+                     "2016-01-05 00:00:00"), 
+                   tz = "GMT"),
+  area = c(300, 200, 200, 450)
+)
 ```
-
-`r knitr::kable(lu)`
-You can create this yourself or by using the function a_lookup_fn (if your database includes the column a). The important thing to note is that this should include all cameras that were functioning during the sampling period, not just ones that took pictures of the target species. Currently, this package is not built to account for cameras that were functioning during part of the sampling period or cameras whose area changes, but those are coming in future iterations.  
+`r knitr::kable(deploy)`
+ 
 
 ## Time-to-Event
 This is in progress. No code yet.
 
 ## Space-to-Event
-### Encounter history
-To create your STE encounter history, you must define the first and last days of your study period, and then use the function ste_data_fn (see its documentation for more details)(i.e., `?ste_data_fn`).
+### Specify occasions
+
+The user should first specify the sampling occasions. This can be done manually or with the function build_occ(). The sampling occasions should be in a data.frame or tibble with the following structure:
 ```{r}
-dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
-dat.ste <- ste_data_fn(df,
-                       count_col = "count",
-                       samp_freq = 3600,
-                       samp_length = 10,
-                       cam_areas = lu,
-                       date_lim = dates,
-                       A = 150000)
-dat.ste
+study_dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
+occ <- build_occ(samp_freq = 3600,
+                 samp_length = 10,
+                 study_start = study_dates[1],
+                 study_end = study_dates[2])
 ```
 
+### Build your encounter history
+
+With one simple step, you can build your space-to-event encounter history. 
+Be sure to specify your study_area size in the same units as your camera visible areas 
+```{r}
+ste_eh <- build_ste_eh(df, deploy, occ, study_area = 1e6)
+ste_eh
+```
 
 ### Estimate abundance
 To estimate abundance from STE, use the function ste_estN_fn
 ```{r}
-ste_estN_fn(dat.ste)
+ste_estN_fn(ste_eh)
 ```
 
-This will always produce a warning about Nelder-Mead. In future versions of this package, you may be able to change your optimization method. 
+This will always produce a warning about Nelder-Mead. In future versions of this package, you may be able to change your optimization method.
 
 
 ## Instantaneous Sampling.
-This is in progress. No code yet. 
+This is in progress. No code yet.
 
