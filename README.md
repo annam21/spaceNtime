@@ -6,8 +6,8 @@ This is my first package and is very much in development, so it is guaranteed to
 ## Getting started 
 Please try installing the package and viewing the vignette.
 
-`devtools::install_github("annam21/TTE.STE.IS", build_opts = c("--no-resave-data", "--no-manual"), force = T)`
+`devtools::install_github("annam21/spaceNtime", build_opts = c("--no-resave-data", "--no-manual"), force = T)`
 
-`browseVignettes("TTE.STE.IS")`
+`browseVignettes("spaceNtime")`
 
 Then click on HTML. 

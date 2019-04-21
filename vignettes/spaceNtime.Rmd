@@ -1,10 +1,8 @@
 ---
-title: "Using TTE.STE.IS"
-author: "Anna K. Moeller"
-date: "`r Sys.Date()`"
+title: "Using spaceNtime"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Using TTE.STE.IS}
+  %\VignetteIndexEntry{spaceNtime}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -16,16 +14,16 @@ knitr::opts_chunk$set(
 )
 ```
 
-The package TTE.STE.IS was created to assist with analyses described in ["Three novel methods to estimate abundance of unmarked animals using remote cameras" by Moeller et al. (2018)](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.2331). This package helps the user create an encounter history from a database of analyzed photos and run each of the models.
+The package spaceNtime was created to assist with analyses described in ["Three novel methods to estimate abundance of unmarked animals using remote cameras" by Moeller et al. (2018)](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.2331). This package helps the user create an encounter history from a database of analyzed photos and run each of the models.
 
 Currently, this package only includes STE, but the other methods are on their way. 
 
 This is my first package and is very much in development, so it is guaranteed to have bugs. I would appreciate hearing from you if you encounter problems!
 
 ## Load the package
-If you haven't already installed it, please see instructions at the bottom of my [Github repository](https://github.com/annam21/TTE.STE.IS)
+If you haven't already installed it, please see instructions at the bottom of my [Github repository](https://github.com/annam21/spaceNtime)
 ```{r, message = F}
-library(TTE.STE.IS)
+library(spaceNtime)
 ```
 
 
