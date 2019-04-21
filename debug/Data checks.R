@@ -17,15 +17,13 @@ deploy <- data.frame(
 
 
 
+# Do all the functions work if deploy has dates instead of POSIX?
+deploy <- data.frame(cam = c(1, 2, 2),
+                     start = as.Date(c("2015-12-01", "2016-01-01", "2016-01-02")),
+                     end = as.Date(c("2016-01-05", "2016-01-01", "2016-01-05")),
+                     area = c(300,300,450))
 
 
-# More questions... 
-# Deploy: 
-# What happens if these are Dates instead of times? 
-# What happens if a start and end in one line are the same?
-
-
-# 
 # # Data summary 
 # #   Summarise the number of cameras in each... later after subset
 # length(unique(df$cam))
