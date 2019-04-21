@@ -1,118 +1,14 @@
   # Rewrite package entirely, for staggered entry
 
-  
-  devtools::load_all(".") # Load current package. 
-  library(dplyr)
-  library(lubridate)
+#' I did it!!!!!!
+#' Tomorrow: 
+#' build in forced data subset 
+#' after subset, check that all cameras in df are in deploy
+#' suppress Nelder-Mead warning
+#' Change exp_logl_fn to take a dataframe
+#' create a data summary function for the user (maybe: summary(ste_eh) with class "STE")
+#' Then move on to ISE! 
 
-
-
-  # 2) Build occasions
-  build_occ <- function(samp_freq, samp_length, study_start, study_end){
-    # Occasions without camera
-    data.frame(
-      start = sampling_start(samp_freq = samp_freq,
-                             date_lim = c(study_start, study_end))
-      ) %>%  
-      mutate(end = start + samp_length,
-             occ = 1:n()) %>% 
-      select(occ, start, end) 
-  }
-
-  # Occasions by camera
-  build_occ_cam <- function(df, occ, new_elem){
-    # dat = a list, including $df and $occ
-    tidyr::crossing(
-      occ = occ$occ, 
-      cam = deploy$cam
-      ) %>% 
-      left_join(., occ, by = "occ") 
-  }
-  
-  # occ_cam <- build_occ_cam(dat_subset) # Example call
-  
-  # 2.1) Create lubridate intervals in the data (for later use)
-  chck_names <- function(x){
-    "start" %in% names(x) & "end" %in% names(x)
-  }
-  add_int <- function(x){
-    x %>% 
-      mutate(int = start %--% end)
-  }
-  # dat_subset %>% 
-  #   purrr::map_if(., chck_names, add_int) # Example call
-    
-  
-  # 3) Find the area of working cameras at each occasion
-  # 3.1) Define effort (from deploy) and area (from deploy) at each occasion
-  # combine effort and camera area by occasion
-  effort_fn <- function(df, deploy, occ){
-    
-    # Create intervals in data
-    dd <- list(df = df, 
-               deploy = deploy, 
-               occ = occ) %>% 
-      purrr::map_if(., chck_names, add_int)
-    
-    # Create occasions by camera
-    dd$effort <- build_occ_cam(dd$df, dd$occ, "effort") 
-    
-    # Combine these two
-    dd$effort <- dd$effort %>%
-      rename(occ_int = int) %>% 
-      left_join(., dd$deploy, by = "cam") %>%
-      filter(occ_int %within% int) %>%
-      select(occ, cam, area) %>% 
-      left_join(dd$effort, ., by = c("occ", "cam")) %>% 
-      mutate(area = replace(area, is.na(area), 0))
-    return(dd$effort)
-  }
-
-  # 3.2) Calculate censor for each time step
-  calc_censor <- function(effort){
-    # Just requires effort df 
-    effort %>% 
-      group_by(occ) %>% 
-      summarise(censor = sum(area))
-  }
-  
-  # 4) Compute STE on each occasion 
-  ste_data_fn <- function(df, occ, effort, A){
-    # $df and $effort and $occ from dat
-    # A is your study area size.
-    
-    # First, calculate your censors
-    censor <- calc_censor(effort)
-    
-    tmp <- df %>%
-      # Find count at each sampling occasion
-      left_join(effort, .,  by = "cam") %>% 
-      filter(datetime %within% int) %>% 
-      
-      # Randomly order the cameras at each occasion
-      filter(area != 0) %>% 
-      group_by(occ) %>% 
-      sample_n(n()) %>%
-      
-      # Find the area until the first count, at each occcasion
-      mutate(STE = cumsum(area)) %>% 
-      filter(count > 0) %>% 
-      filter(!duplicated(occ)) %>% 
-      
-      # Add back NAs on all other sampling occasions
-      select(occ, STE) %>%
-      left_join(occ, .) %>%  
-      
-      # Add in our censors
-      left_join(., censor)    
-   
-    if(all(is.na(tmp$STE))) warning("No animals detected in any sampling occasion")
-    
-    out <- list(toevent = matrix(tmp$STE, nrow = 1),
-                censor = tmp$censor,
-                A = A )
-    return(out)
-  }
 
 
 ################################################################################ 
@@ -144,7 +40,7 @@
     area = c(300, 200, 200, 450)
   )
 
-  # Do all the functions work if deploy (deploy) has dates instead of POSIX?
+  # Do all the functions work if deploy has dates instead of POSIX?
   # deploy <- data.frame(cam = c(1, 2, 2),
   #                      start = as.Date(c("2015-12-01", "2016-01-01", "2016-01-02")),
   #                      end = as.Date(c("2016-01-05", "2016-01-01", "2016-01-05")),
@@ -154,13 +50,14 @@
   
   # 1) Build occasions
   study_dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
-  occ <- build_occ(samp_freq = 3600, 
+  occ <- build_occ(samp_freq = 3600,
                               samp_length = 10,
                               study_start = study_dates[1],
                               study_end = study_dates[2])
   
   # 2) Data checks and 3) define effort
   effort <- effort_fn(df, deploy, occ)
+  # One good place: in build_occ_cam - check occ and deploy
   
   # 4)  think the subset check might go here. Make sure all pieces of dat are subset
   #  Put together data in a list 
@@ -282,3 +179,9 @@
   #   end = as.POSIXct(c("2016-01-05 00:00:00", "2016-01-01 12:00:00", "2016-01-05 00:00:00"), tz = "GMT"),
   #   working = 1
   # )
+  
+  
+  # dd <- list(df = df, 
+  #            deploy = deploy, 
+  #            occ = occ) %>% 
+  #   purrr::map_if(., ~chck_names(., c("start", "end")), add_int)
