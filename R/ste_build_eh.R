@@ -53,7 +53,7 @@ ste_build_eh <- function(df, deploy, occ){
   eff <- effort_fn(deploy, occ)
   
   # Calculate the censors
-  censor <- calc_censor(eff)
+  censor <- ste_calc_censor(eff)
 
   # Calculate STE at each occasion
   out <- calc_ste(df, occ, eff)   %>%

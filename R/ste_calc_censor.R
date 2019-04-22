@@ -12,7 +12,7 @@
 #'             study_end = study_dates[2])
 #' eff <- effort_fn(deploy, occ)
 #' calc_censor(eff)
-calc_censor <- function(effort){
+ste_calc_censor <- function(effort){
   # Just requires effort 
   effort %>% 
     group_by(occ) %>% 
