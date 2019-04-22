@@ -57,7 +57,7 @@ df <- data.frame(
 
 ### Camera deployment information
 
-The user must also provide a database called deploy. This is a dataframe or tibble that contains information about the active periods for each active camera and their areas. **Please note,** to get accurate estimates, this should include all cameras that were functioning, not just the ones that got pictures of your target species. Each row represents a period of **continuous functionality** for a camera. If a camera ever went offline then came back on, it should have multiple rows. For cameras with multiple entries, the time periods should never overlap. If a camera's area changes, that should be entered as a new row. area = 0 is equivalent to saying the camera was not functioning. 
+The user must also provide a database called deploy. This is a dataframe or tibble that contains information about the active periods for each active camera and their areas. **Please note,** to get accurate estimates, this should include all cameras that were functioning, not just the ones that got pictures of your target species. Each row represents a period of **continuous functionality** for a camera. If a camera ever went offline then came back on, it should have multiple rows. For cameras with multiple entries, the time periods should never overlap. If a camera's area changes, that should be entered as a new row. Column area = 0 is equivalent to saying the camera was not functioning. 
 
 Deploy must have, at a minimum, these four columns:
 
@@ -106,14 +106,14 @@ occ <- build_occ(samp_freq = 3600,
 ### Build your encounter history
 
 With one simple step, you can build your space-to-event encounter history. 
-Be sure to specify your study_area size in the same units as your camera visible areas 
 ```{r}
 ste_eh <- build_ste_eh(df, deploy, occ)
 ste_eh
 ```
 
 ### Estimate abundance
-To estimate abundance from STE, use the function ste_estN_fn
+To estimate abundance from STE, use the function ste_estN_fn.
+Be sure to specify your study_area size in the same units as your camera visible areas.
 ```{r}
 ste_estN_fn(ste_eh, study_area = 1e6)
 ```
