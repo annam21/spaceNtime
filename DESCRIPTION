@@ -13,7 +13,7 @@ Description: This package contains code to run Time-to-Event, Space-to-Event, an
     start and end (representing the dates that each camera was active; both POSIXct), and area 
     (camera area during each of those intervals, class numeric). This dataframe should 
     Disclaimer! This package is currently in development and probably buggy.
-Depends: R (>= 3.5.1)
+Depends: R (>= 3.5.3)
 License: MIT License
 Encoding: UTF-8
 LazyData: true
