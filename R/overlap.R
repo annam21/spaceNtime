@@ -23,21 +23,26 @@ overl <- function(one_int, n_int){
 #'
 #' @param x a dataframe or tibble, with columns cam, start and end
 #'
-#' @return a dataframe with any records that are overlapping (grouped by cam)
+#' @return a dataframe with any records that are overlapping (grouped by cam) should be 0 if everything is good.
 #' @export
 #' @import dplyr
 #'
 #' @examples 
 #' find_overlap(deploy)  # validation step 
 find_overlap <- function(x){
-  x %>%
+  out <- x %>%
     assertr::verify(has_all_names("cam", "start", "end")) %>%
     mutate(int = lubridate::interval(start, end)) %>%
     group_by(cam) %>% 
-    filter(n() > 1) %>%
-    mutate(chk = list(int)) %>% 
-    rowwise() %>% 
-    mutate(overlap = overl(int, chk)) %>%
-    filter(overlap) %>%
-    select(-int, -chk, -overlap)
+    filter(n() > 1) 
+  # If there is more than one row per camera, check overlap
+  if(nrow(out) != 0){
+    out <- out %>%
+      mutate(chk = list(int)) %>% 
+      rowwise() %>% # If this returns empty dataframe, the next step fails. 
+      mutate(overlap = overl(int, chk)) %>%
+      filter(overlap) %>%
+      select(-int, -chk, -overlap)
+  }
+  return(out)
 }
