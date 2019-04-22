@@ -24,6 +24,9 @@ occ <- build_occ(samp_freq = 3600*2, # seconds between each sampling occasion
                  samp_length = 10, # duration of each sampling occasion (seconds)
                  study_start = study_dates[1],
                  study_end = study_dates[2])
+
+# For STE first. 
+eff <- effort_fn(deploy, occ)
 #'  
 #' 
 #' 

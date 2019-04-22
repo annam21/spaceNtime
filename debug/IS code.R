@@ -31,25 +31,40 @@ deploy <- data.frame(
 
 # Build an effort function for timelapse photos
 
-# Write an effort function for timelapse, using df
-effort_T_fn <- function(df, occ, working_col = NULL){
+# Write an effort function for timelapse, using deploy
+effort_T_fn <- function(deploy, occ){
   
   # Create occasions by ALL cameras (do before subset step)
-  occ_by_cam <- build_occ_cam(df, occ) %>%
+  occ_by_cam <- build_occ_cam(deploy, occ) %>%
     add_int(.) 
   
-  # Subset df down to functioning photos (optional)
-  if(!is.null(working_col)){
-    df <- df %>%
-      filter(!!as.name(working_col) == T)
-  }
-  
   # Put the two together  
-  eff <- left_join(occ_by_cam, df, by = "cam") %>%
+  eff <- left_join(occ_by_cam, deploy, by = "cam") %>%
     filter(datetime %within% int) %>%
-    select(occ, cam, count) %>%
-    left_join(occ_by_cam, ., by = c("occ", "cam"))
+    select(occ, cam, area) %>%
+    left_join(occ_by_cam, ., by = c("occ", "cam")) %>% 
+    mutate(area = replace(area, is.na(area), 0))
+  
+  # # Subset df down to functioning photos (optional)
+  # if(!is.null(working_col)){
+  #   df <- df %>%
+  #     filter(!!as.name(working_col) == T)
+  # }
+
 }
+
+
+# The old one is an effort with intervals specified in deploy
+if(all(c("start", "end") %in% names(deploy))){
+  eff <- effort_fn(deploy, occ)
+} else {
+  eff <- effort2_fn()
+}
+# I need to write an effort function for the opposite - deploy times fit in intervals
+
+
+
+
 
 
 

@@ -11,8 +11,8 @@
 effort_fn <- function(deploy, occ){
   # Create intervals in deploy
   deploy <- deploy %>%
-    add_int(.)
-  
+    add_int(.) 
+
   # Create occasions by camera
   occ_by_cam <- build_occ_cam(deploy, occ) %>%
     add_int(.)
