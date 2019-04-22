@@ -56,7 +56,7 @@ ste_build_eh <- function(df, deploy, occ){
   censor <- ste_calc_censor(eff)
 
   # Calculate STE at each occasion
-  out <- calc_ste(df, occ, eff)   %>%
+  out <- ste_calc_toevent(df, occ, eff)   %>%
     mutate(censor = censor$censor)
 
   return(out)

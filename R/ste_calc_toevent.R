@@ -15,7 +15,7 @@
 #'             study_end = study_dates[2])
 #'  eff <- effort_fn(deploy, occ)
 #'  calc_ste(df, occ, eff)
-calc_ste <- function(df, occ, effort){
+ste_calc_toevent <- function(df, occ, effort){
   tmp <- df %>%
     # Find count at each sampling occasion
     left_join(effort, .,  by = "cam") %>% 
