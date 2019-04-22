@@ -54,3 +54,35 @@ effort_T_fn <- function(df, occ, working_col = NULL){
 
 
 
+
+# IS bootstrap
+is_boot_fn <- function(cam_occ_EH, steps_btw_samples, A, nboot){
+  
+  bootN <- rep(NA, nboot)
+  for(i in 1:nboot){
+    # Sample cams with replacement (thus spread then gather): make a new eh
+    lu <- cam_occ_EH %>% 
+      select(cam, step, a)
+    bootdf <- cam_occ_EH %>% 
+      select(-a) %>% 
+      spread(step, nanimals) %>%
+      sample_n(size = nrow(.), replace = T) %>%
+      gather(step, nanimals, -cam) %>%
+      mutate(step = as.numeric(step)) %>% 
+      left_join(., lu, by = c("cam", "step"))
+    
+    
+    # Estimate abundance on it
+    bootN[i] <- is_estN_fn(bootdf, steps_btw_samples, A)$N
+  }
+  
+  SE_is_estN <- sd(bootN)
+  CI_is_estN <- quantile(bootN, c(0.025, 0.975))
+  
+  return(list(SE_is_estN = SE_is_estN, 
+              CI_is_estN = CI_is_estN) )
+}
+
+
+
+

@@ -1,9 +1,7 @@
 
 #' To do
-#' finish and document build_ise_eh.R
+#' finish and document ise_build_eh.R
 #' Do I need an assume0 argument in STE? 
-#' Rename functions to match. I think ise_estN_fn, ise_build_eh, etc. 
-#' Add variance estimator for ISE 
 #' 
 #' For timelapse photos: 
 #' deploy should only have occasions, not intervals. 
@@ -33,6 +31,7 @@
 #' 
 #' For IS:
 #' 
-#
+#' For TTE: 
+#' NA because camera wasn't working is different than NA because no animals were detected... 
 
 

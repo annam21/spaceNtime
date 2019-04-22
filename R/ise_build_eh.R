@@ -1,3 +1,43 @@
+#' Build ISE encounter history
+#'
+#' @param df df object
+#' @param deploy deploy object 
+#' @param occ occ object
+#' @param assume0 if T: assume that no picture = no animal. If F: assume that no picture = camera not working
+#'
+#' @return a data frame with encounter history for instantaneous sampling 
+#' @export
+#'
+#' @examples
+#' df <- data.frame(
+#'   cam = c(1,1,2,2,2),
+#'   datetime = as.POSIXct(c("2016-01-02 12:00:00",
+#'                         "2016-01-03 13:12:00",
+#'                         "2016-01-02 12:00:00",
+#'                         "2016-01-02 14:00:00",
+#'                         "2016-01-03 16:53:42"),
+#'                       tz = "GMT"),
+#'   count = c(1, 0, 2, 1, 2)
+#' )
+#' deploy <- data.frame(
+#'   cam = c(1, 2, 2, 2),
+#'   start = as.POSIXct(c("2015-12-01 15:00:00",
+#'                        "2015-12-08 00:00:00", 
+#'                        "2016-01-01 00:00:00", 
+#'                        "2016-01-02 00:00:00"),
+#'                      tz = "GMT"),
+#'   end = as.POSIXct(c("2016-01-05 00:00:00", 
+#'                      "2015-12-19 03:30:00", 
+#'                      "2016-01-01 05:00:00",
+#'                      "2016-01-05 00:00:00"), 
+#'                    tz = "GMT"),
+#'   area = c(300, 200, 200, 450)
+#' )
+#'occ <- build_occ(samp_freq = 3600, 
+#'             samp_length = 10,
+#'             study_start = study_dates[1],
+#'             study_end = study_dates[2])
+#' ise_build_eh(df, deploy, occ, assume0 = T)
 ise_build_eh <- function(df, deploy, occ, assume0 = T){
   # This is currently for deploy version 2 only 
   # Assume0 = T if you want to assume no picture = 0 animals

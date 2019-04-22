@@ -142,7 +142,7 @@ occ <- build_occ(samp_freq = 3600, # seconds between each sampling occasion
 With one simple step, you can build your space-to-event encounter history. 
 Be sure to specify your study_area size in the same units as your camera visible areas 
 ```{r}
-ste_eh <- build_ste_eh(df, deploy, occ)
+ste_eh <- ste_build_eh(df, deploy, occ)
 ste_eh
 ```
 
@@ -176,9 +176,8 @@ head(ise_eh)
 
 ### Estimate abundance 
 ```{r}
-ise_estN <- ise_estN_fn(
+ise_estN_fn(
   ise_eh,
-  A = 1e6
+  study_area = 1e6
 )
-ise_estN
 ```
