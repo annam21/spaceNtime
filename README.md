@@ -11,3 +11,5 @@ Please try installing the package and viewing the vignette.
 `browseVignettes("spaceNtime")`
 
 Then click on HTML. 
+
+If you're having trouble installing the package, try updating to the newest version of R. 

@@ -10,7 +10,7 @@ find_overlap(x)
 \item{x}{a dataframe or tibble, with columns cam, start and end}
 }
 \value{
-a dataframe with any records that are overlapping (grouped by cam)
+a dataframe with any records that are overlapping (grouped by cam) should be 0 if everything is good.
 }
 \description{
 Find cameras with overlapping intervals

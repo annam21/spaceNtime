@@ -57,6 +57,7 @@ df <- data.frame(
 
 ### Camera deployment information
 
+
 The user must also provide a database called deploy. This is a dataframe or tibble that contains information about the active periods for each active camera and their areas. **Please note,** to get accurate estimates, this should include all cameras that were functioning, not just the ones that got pictures of your target species. 
 
 #### Version 1. 
@@ -141,8 +142,10 @@ ste_eh
 ```
 
 ### Estimate abundance
+
 To estimate abundance from STE, use the function ste_estN_fn. 
 Be sure to specify your study_area size in the same units as your camera visible areas. 
+
 ```{r}
 ste_estN_fn(ste_eh, study_area = 1e6)
 ```
