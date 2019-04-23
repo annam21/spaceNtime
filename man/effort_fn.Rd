@@ -17,6 +17,10 @@ a dataframe or tibble the with the area at each camera and occasion
 \description{
 Determine effort at each camera on each occasion
 }
+\details{
+If any occasion is missing from deploy for a camera, it is assumed 
+that the camera was not working at that time.
+}
 \examples{
 effort_fn(deploy, occ)
 }

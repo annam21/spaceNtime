@@ -4,7 +4,7 @@
 #' @param deploy deploy object
 #' @param occ tibble or dataframe specifying sampling occasions
 #'
-#' @return a list, for feeding into ste_estn_fn
+#' @return a dataframe with new columns for space-to-event and censor
 #' @export
 #'
 #' @examples 
@@ -36,27 +36,33 @@
 #'             samp_length = 10,
 #'             study_start = study_dates[1],
 #'             study_end = study_dates[2])
-#' build_ste_eh(df, deploy, occ)
+#' ste_build_eh(df, deploy, occ)
 #' 
-build_ste_eh <- function(df, deploy, occ){
-
+ste_build_eh <- function(df, deploy, occ){
+  
   # Run all my data checks here
   df <- validate_df(df)
   deploy <- validate_deploy(deploy)
   occ <- validate_occ(occ)
-  validate_df_deploy(df, deploy) # This one is weird because it doesn't return anything...
+
+  # Forcing a data subset so I can validate df and deploy together. 
+  # Subset is not technically necessary because everything hinges on occ later.
+  d1 <- min(occ$start)
+  d2 <- max(occ$end)
+  df_s <- study_subset(df, "datetime", NULL, d1, d2)
+  deploy_s <- study_subset(deploy, "start", "end", d1, d2)
   
-  # I could force a data subset here, but it all hinges on occ. 
-  # If occ is correct, everything else will be. 
+  # Then validate df and deploy together (should really do after subset)
+  validate_df_deploy(df_s, deploy_s) # This one is weird because it doesn't return anything if all good...
   
   # Build effort for each cam at each occasion
-  eff <- effort_fn(deploy, occ)
+  eff <- effort_fn(deploy_s, occ)
   
   # Calculate the censors
-  censor <- calc_censor(eff)
+  censor <- ste_calc_censor(eff)
 
   # Calculate STE at each occasion
-  out <- calc_ste(df, occ, eff)   %>%
+  out <- ste_calc_toevent(df_s, occ, eff)   %>%
     mutate(censor = censor$censor)
 
   return(out)

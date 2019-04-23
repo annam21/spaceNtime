@@ -79,9 +79,24 @@ validate_deploy <- function(deploy){
 validate_df_deploy <- function(df, deploy){
   stopifnot(lubridate::tz(deploy$start) == lubridate::tz(df$datetime))
   
-  # Fail if a camera in df is not in deploy
+  # # Fail if a camera in df is not in deploy
   stopifnot(class(df$cam) == class(deploy$cam))
   stopifnot(all(unique(df$cam) %in% deploy$cam) )
+  
+  # Fail if a camera took a photo but that time is not in deploy
+  # Very similar function to find_overlap. Work on that in future
+  pic_in_deploy <- deploy %>%
+    add_int(.) %>% 
+    select(cam, int) %>% 
+    left_join(df, ., by = "cam") %>% 
+    group_by(cam) %>% 
+    mutate(chk = list(int)) %>% 
+    mutate(exist = datetime %within% chk) %>% 
+    select(-chk) %>% 
+    summarise(allgood = any(exist)) %>%
+    filter(allgood == F | is.na(allgood))
+  if(nrow(pic_in_deploy) > 0) stop(paste("There are photos at cam", pic_in_deploy$cam, "outside intervals specified in deploy"))
+  
 }
 
 
