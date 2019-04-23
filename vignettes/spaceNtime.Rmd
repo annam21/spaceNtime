@@ -166,13 +166,6 @@ occ <- build_occ(samp_freq = 3600,
 
 ### Build your encounter history
 
-
-**NOTE** The assmume_p1 argument is crucial for getting accurate results. To build the encounter history, this code will look for photos at each camera during each occasion. If there are no photo there, should the model assume that no animals were present or that the camera malfunctioned?
-
-- assume_p1 = T: The camera did not take a photo because there were no animals present (For motion sensor photos; assuming p = 1) 
-
-- assume_p1 = F: The camera did not take a photo because it stopped functioning (For timelapse photos; assuming it was supposed to take a photo at every occasion)
-
 ```{r}
 ise_eh <- ise_build_eh(df, deploy, occ) 
 head(ise_eh)
