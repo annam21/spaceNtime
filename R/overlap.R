@@ -30,19 +30,14 @@ overl <- function(one_int, n_int){
 #' @examples 
 #' find_overlap(deploy)  # validation step 
 find_overlap <- function(x){
-  out <- x %>%
+  x %>%
     assertr::verify(has_all_names("cam", "start", "end")) %>%
     mutate(int = lubridate::interval(start, end)) %>%
     group_by(cam) %>% 
-    filter(n() > 1) 
-  # If there is more than one row per camera, check overlap
-  if(nrow(out) != 0){
-    out <- out %>%
-      mutate(chk = list(int)) %>% 
-      rowwise() %>% # If this returns empty dataframe, the next step fails. 
-      mutate(overlap = overl(int, chk)) %>%
-      filter(overlap) %>%
-      select(-int, -chk, -overlap)
-  }
-  return(out)
+    mutate(chk = list(int)) %>% 
+    rowwise() %>% # This might be slow. I had a for loop earlier that might be better
+    mutate(overlap = overl(int, chk)) %>%
+    filter(overlap) %>%
+    select(-int, -chk, -overlap)
 }
+
