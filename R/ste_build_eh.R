@@ -3,9 +3,6 @@
 #' @param df df object 
 #' @param deploy deploy object
 #' @param occ tibble or dataframe specifying sampling occasions
-#' @param assume_p1 logical; TRUE if you want to assume that missing photos are 
-#' due to absence of animals, FALSE if you want to assume that missing photos are 
-#' due to camera malfunction. 
 #'
 #' @return a dataframe with new columns for space-to-event and censor
 #' @export

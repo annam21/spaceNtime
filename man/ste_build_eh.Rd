@@ -12,10 +12,6 @@ ste_build_eh(df, deploy, occ)
 \item{deploy}{deploy object}
 
 \item{occ}{tibble or dataframe specifying sampling occasions}
-
-\item{assume_p1}{logical; TRUE if you want to assume that missing photos are 
-due to absence of animals, FALSE if you want to assume that missing photos are 
-due to camera malfunction.}
 }
 \value{
 a dataframe with new columns for space-to-event and censor

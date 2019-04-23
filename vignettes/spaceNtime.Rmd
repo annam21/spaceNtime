@@ -59,6 +59,8 @@ df <- data.frame(
 
 The user must also provide a database called deploy. This is a dataframe or tibble that contains information about the active periods for each active camera and their areas. **Please note,** to get accurate estimates, this should include all cameras that were functioning, not just the ones that got pictures of your target species. 
 
+#### Version 1. 
+
 ```{r}
 deploy <- data.frame(
   cam = c(1, 2, 2, 2),
@@ -77,10 +79,11 @@ deploy <- data.frame(
 ```
 `r knitr::kable(deploy, caption = "deploy version 2")`
 
-Each row represents a period of **continuous functionality** for a camera. If a camera ever went offline then came back on, it should have multiple rows. For cameras with multiple entries, the time periods should never overlap. Whenever the camera's area changes, it should be entered as a new row. Setting area = 0 is equivalent to the camera not functioning. If a camera has any missing periods, it will be assumed that the camera was not working during that time.  
+This version can be used for either motion-sensor or timelapse photos. Each row represents a period of **continuous functionality** for a camera. If a camera ever went offline then came back on, it should have multiple rows. For cameras with multiple entries, the time periods should never overlap. Whenever the camera's area changes, it should be entered as a new row. Setting area = 0 is equivalent to the camera not functioning. If a camera has any missing periods, it will be assumed that the camera was not working during that time.  
 
 #### Version 2: Timelapse only
-Users with timelapse data may have occasion-by-occasion information about the camera's area and functionality. This information would be collected while analyzing the photos. For instance, a photo with the lens covered in snow could be coded as area = 0. If this information was collected, the user has the option of creating the object deploy directly from df. 
+Users with timelapse data have the option of creating deploy directly from df. This is the suggested form for timelapse photos because any missing photos are interpreted as camera malfunctions rather than counts of 0 animals. Furthermore, this allows the most flexibility for users with occasion-by-occasion information about the camera's area and functionality collected collected while analyzing the photos. For example, a photo with the lens covered in snow could be coded as area = 0. 
+
 ```{r, echo = F}
 df1 <- data.frame(
   cam = c(1,1,2,2,2),
@@ -100,7 +103,7 @@ deploy1 <- df1 %>%
 ```
 `r knitr::kable(deploy1, caption = "deploy occasion-by-occasion")`
 
-This version of deploy should contain *every* photo taken during the study period. It will have the following columns, at a minimum:
+This version of deploy should contain *every* functional photo (i.e., not obstructed or malfunctioning) taken during the study period. It will have the following columns, at a minimum:
 
 - cam: The unique ID of the sampling site (same class as df$cam)
 
@@ -111,7 +114,6 @@ This version of deploy should contain *every* photo taken during the study perio
 - area: the camera's visible area, in any units (class numeric)
 
 The area should be 0 on any occasion that the camera was obstructed or malfunctioning. 
-We will later look for any missing photos, which will indicate the camera was not functioning properly. 
 
 ## Time-to-Event
 This is in progress. No code yet.
@@ -168,7 +170,7 @@ occ <- build_occ(samp_freq = 3600,
 - assume_p1 = F: The camera did not take a photo because it stopped functioning (For timelapse photos; assuming it was supposed to take a photo at every occasion)
 
 ```{r}
-ise_eh <- ise_build_eh(df, deploy, occ, assume0 = T) 
+ise_eh <- ise_build_eh(df, deploy, occ) 
 head(ise_eh)
 ```
 

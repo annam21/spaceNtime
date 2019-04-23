@@ -4,7 +4,7 @@
 \alias{ise_build_eh}
 \title{Build ISE encounter history}
 \usage{
-ise_build_eh(df, deploy, occ, assume0 = T)
+ise_build_eh(df, deploy, occ)
 }
 \arguments{
 \item{df}{df object}

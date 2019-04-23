@@ -38,41 +38,38 @@
 #'             study_start = study_dates[1],
 #'             study_end = study_dates[2])
 #' ise_build_eh(df, deploy, occ, assume0 = T)
-ise_build_eh <- function(df, deploy, occ, assume0 = T){
-  # This is currently for deploy version 2 only 
-  # Assume0 = T if you want to assume no picture = 0 animals
-  # Assume0 = F if you want to assume no picture = not working. 
-  
+ise_build_eh <- function(df, deploy, occ){
+
   # Run all my data checks here
   df <- validate_df(df)
   deploy <- validate_deploy(deploy)
   occ <- validate_occ(occ)
   validate_df_deploy(df, deploy) # This one doesn't return anything
   
-  # I could force a data subset here, but it all hinges on occ. 
-  # If occ is correct, everything else will be. 
+  # Forcing a data subset so I can validate df and deploy together. 
+  # Subset is not technically necessary because everything hinges on occ later.
+  d1 <- min(occ$start)
+  d2 <- max(occ$end)
+  df_s <- study_subset(df, "datetime", NULL, d1, d2)
+  deploy_s <- study_subset(deploy, "start", "end", d1, d2)
+  
+  # Then validate df and deploy together (should really do after subset)
+  validate_df_deploy(df_s, deploy_s) # This one is weird because it doesn't return anything if all good...
   
   # Build effort for each cam at each occasion
-  eff <- effort_fn(deploy, occ)
+  eff <- effort_fn(deploy_s, occ)
   
   ### All lines until here are same as in STE... think about new fn. 
   
   # Build ISE EH
   ise <- eff %>% 
-    left_join(., df, by = "cam") %>%
+    left_join(., df_s, by = "cam") %>%
     filter(datetime %within% int) %>%
     select(occ, cam, count) %>%
     left_join(eff, ., by = c("occ", "cam")) %>%
-    select(-int)
-  
-  # timelapse: NA means that camera wasn't on. 
-  # motion sensor: we will assume NA should be 0
-  if(assume0){
-    ise <- ise %>% 
-      mutate(count = replace(count, is.na(count), 0)) 
-  } else {
-    ise <- ise %>% 
-      mutate(area = replace(area, is.na(count), 0))
-  }
+    select(-int) %>% 
+    mutate(count = replace(count, is.na(count) & area > 0, 0))
+    # as long as area >0, deploy said the camera was on. So we're going to fill in count = 0
+
  return(ise)
 }
