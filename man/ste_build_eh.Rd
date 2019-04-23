@@ -4,7 +4,7 @@
 \alias{ste_build_eh}
 \title{Build STE encounter history}
 \usage{
-ste_build_eh(df, deploy, occ)
+ste_build_eh(df, deploy, occ, assume_p1)
 }
 \arguments{
 \item{df}{df object}
@@ -12,9 +12,13 @@ ste_build_eh(df, deploy, occ)
 \item{deploy}{deploy object}
 
 \item{occ}{tibble or dataframe specifying sampling occasions}
+
+\item{assume_p1}{logical; TRUE if you want to assume that missing photos are 
+due to absence of animals, FALSE if you want to assume that missing photos are 
+due to camera malfunction.}
 }
 \value{
-a list, for feeding into ste_estn_fn
+a dataframe with new columns for space-to-event and censor
 }
 \description{
 Build STE encounter history

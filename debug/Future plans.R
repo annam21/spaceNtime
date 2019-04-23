@@ -1,6 +1,9 @@
 
 #' To do
-#' Do I need an assume0 argument in STE? 
+#' assume0 argument in STE and in ISE. 
+#' validate deploy_df after subsetting. Can't check that they have the same cameras before. 
+#' I need to look for count > 0 during the entire interval, not just in the first photo. Rewrite.  
+#' Test that version 2 of deploy actually works. 
 #' 
 #' For timelapse photos: 
 #' deploy should only have occasions, not intervals. 
@@ -11,6 +14,8 @@
 #' Deploy can be broader. Say deploy = df. and it doesn't have interals, now it is each time. 
 #' cam_occ_area <- effort_fn(deploy, occ)
 #' left_join(area_occ_cam , df). and 
+#' 
+#' validate_df_deploy very similar function to find_overlap. Work on that in future
 d <- as.POSIXct("2016-01-02 00:00:00", tz = "GMT")
 df <- data.frame(
   cam = c(rep(1,3), rep(2,4)),
