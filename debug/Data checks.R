@@ -33,6 +33,16 @@ deploy <- data.frame(
 
  
 # Overlapping time intervals 
+df <- data.frame(
+  cam = c(1,1,2,2,2),
+  datetime = as.POSIXct(c("2016-01-02 12:00:00",
+                          "2016-01-03 13:12:00",
+                          "2016-01-02 12:00:00",
+                          "2016-01-02 14:00:00",
+                          "2016-01-03 16:53:42"),
+                        tz = "GMT"),
+  count = c(1, 0, 0, 1, 2) 
+  )
 deploy <- data.frame(
   cam = c(1, 2, 2, 2),
   start = as.POSIXct(c("2015-12-01 15:00:00",
@@ -48,8 +58,34 @@ deploy <- data.frame(
   area = c(300, 200, 150, 450)
 )
 
+# Area changes within a sampling occasion 
+deploy <- data.frame(
+  cam = c(1, 2, 2, 2, 2, 3),
+  start = as.POSIXct(c("2015-12-01 15:00:00",
+                       "2015-12-08 00:00:00", 
+                       "2016-01-01 00:00:00", 
+                       "2016-01-02 00:00:00",
+                       "2016-01-02 12:00:04",
+                       "2016-01-01 00:00:00"),
+                     tz = "GMT"),
+  end = as.POSIXct(c("2016-01-05 00:00:00", 
+                     "2015-12-19 03:30:00", 
+                     "2016-01-01 05:00:00",
+                     "2016-01-02 12:00:03",
+                     "2016-01-05 00:00:00",
+                     "2016-01-05 00:00:00"), 
+                   tz = "GMT"),
+  area = c(300, 200, 200, 200, 450, 300)
+)
+# occasion 37
+# Test if an interval of length 0 overlaps a sampling occasion (for timelapse)
+# x <- lubridate::interval("2016-01-02 12:00:00", "2016-01-02 12:00:00")
+# y <- lubridate::interval("2016-01-02 12:00:00", "2016-01-02 12:00:10")
+# lubridate::int_overlaps(x, y)
+# lubridate::int_overlaps(y, x)
+
 # df and deploy for timelapse 
-df_T <- data.frame(
+df <- data.frame(
   cam = c(1,1,2,2,2),
   datetime = as.POSIXct(c("2016-01-02 12:00:00",
                           "2016-01-02 14:00:00",
@@ -60,7 +96,7 @@ df_T <- data.frame(
   count = c(0, 1, 0, 0, 2),
   area = c(300, 300, 200, 0, 450)
 )
-deploy_T <- df_T %>%
+deploy <- df %>%
   mutate(start = datetime, 
          end = start) %>%
   select(cam, start, end, area)

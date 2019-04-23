@@ -59,36 +59,6 @@ df <- data.frame(
 
 The user must also provide a database called deploy. This is a dataframe or tibble that contains information about the active periods for each active camera and their areas. **Please note,** to get accurate estimates, this should include all cameras that were functioning, not just the ones that got pictures of your target species. 
 
-There are two possible versions of deploy. Studies with timelapse photos can use either version. 
-
-#### Version 1: timelapse only
-```{r, echo = F}
-dep1 <- data.frame(
-  cam = c(1,1,2,2,2),
-  datetime = as.POSIXct(c("2016-01-02 12:00:00",
-                          "2016-01-02 14:00:00",
-                          "2016-01-02 12:00:00",
-                          "2016-01-02 14:00:00",
-                          "2016-01-03 16:00:00"),
-                        tz = "GMT"),
-  area = c(300, 300, 200, 0, 450)
-)
-```
-`r knitr::kable(dep1, caption = "deploy version 1")`
-
-This version of deploy will look similar or identical to df, with the column "area". If should contain *every* photo taken during the study period. It will have the following columns, at a minimum:
-
-- cam: The unique ID of the sampling site (same class as df$cam)
-
-- datetime: The date and time of the photo (same class and tz as df$datetime)
-
-- area: the camera's visible area, in any units (class numeric)
-
-The area should be 0 on any occasion that the camera was obstructed or malfunctioning. 
-We will later look for any missing photos, which will indicate the camera was not functioning properly. 
-
-#### Version 2: timelapse or motion-sensor
-
 ```{r}
 deploy <- data.frame(
   cam = c(1, 2, 2, 2),
@@ -107,18 +77,41 @@ deploy <- data.frame(
 ```
 `r knitr::kable(deploy, caption = "deploy version 2")`
 
-Each row represents a period of **continuous functionality** for a camera. If a camera ever went offline then came back on, it should have multiple rows. For cameras with multiple entries, the time periods should never overlap. Whenever the camera's area changes, it should be entered as a new row. area = 0 is equivalent to the camera was not functioning. 
+Each row represents a period of **continuous functionality** for a camera. If a camera ever went offline then came back on, it should have multiple rows. For cameras with multiple entries, the time periods should never overlap. Whenever the camera's area changes, it should be entered as a new row. Setting area = 0 is equivalent to the camera not functioning. If a camera has any missing periods, it will be assumed that the camera was not working during that time.  
 
-This version of deploy must have, at a minimum, these four columns:
+#### Version 2: Timelapse only
+Users with timelapse data may have occasion-by-occasion information about the camera's area and functionality. This information would be collected while analyzing the photos. For instance, a photo with the lens covered in snow could be coded as area = 0. If this information was collected, the user has the option of creating the object deploy directly from df. 
+```{r, echo = F}
+df1 <- data.frame(
+  cam = c(1,1,2,2,2),
+  datetime = as.POSIXct(c("2016-01-02 12:00:00",
+                      "2016-01-02 14:00:00",
+                      "2016-01-02 12:00:00",
+                      "2016-01-02 14:00:00",
+                      "2016-01-03 16:00:00"),
+                    tz = "GMT"),
+  count = c(0, 1, 0, 0, 2),
+  area = c(300, 300, 200, 0, 450)
+)
+deploy1 <- df1 %>%
+  mutate(start = datetime, 
+         end = start) %>%
+  select(cam, start, end, area)
+```
+`r knitr::kable(deploy1, caption = "deploy occasion-by-occasion")`
+
+This version of deploy should contain *every* photo taken during the study period. It will have the following columns, at a minimum:
 
 - cam: The unique ID of the sampling site (same class as df$cam)
 
-- start: the first time this camera with this area was active (class POSIXct, same timezone as df$datetime)
+- start: The date and time of the photo (same class and tz as df$datetime)
 
-- end: the last time this camera with this area was active (class POSIXct, same timezone as df$datetime)
+- end: The date and time of the photo (same class and tz as df$datetime)
 
 - area: the camera's visible area, in any units (class numeric)
 
+The area should be 0 on any occasion that the camera was obstructed or malfunctioning. 
+We will later look for any missing photos, which will indicate the camera was not functioning properly. 
 
 ## Time-to-Event
 This is in progress. No code yet.
@@ -129,33 +122,30 @@ This is in progress. No code yet.
 The first step after defining df and deploy is to specify the sampling occasions. This can be done manually or with the function build_occ(). The sampling occasions should be in a data.frame or tibble with the following structure:
 ```{r}
 study_dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
-occ <- build_occ(samp_freq = 3600, # seconds between each sampling occasion
+occ <- build_occ(samp_freq = 3600, # seconds between the start of each sampling occasion
                  samp_length = 10, # duration of each sampling occasion (seconds)
                  study_start = study_dates[1],
                  study_end = study_dates[2])
 ```
 `r knitr::kable(head(occ), caption = "example structure of occ")`
 
-
 ### Build your encounter history
 
 With one simple step, you can build your space-to-event encounter history. 
-Be sure to specify your study_area size in the same units as your camera visible areas 
+
 ```{r}
 ste_eh <- ste_build_eh(df, deploy, occ)
 ste_eh
 ```
 
 ### Estimate abundance
-To estimate abundance from STE, use the function ste_estN_fn
+To estimate abundance from STE, use the function ste_estN_fn. 
+Be sure to specify your study_area size in the same units as your camera visible areas. 
 ```{r}
 ste_estN_fn(ste_eh, study_area = 1e6)
 ```
 
-This will always produce a warning about Nelder-Mead. In future versions of this package, you may be able to change your optimization method.
-
-
-## Instantaneous Sampling.
+## Instantaneous Sampling
 ### Specify occasions
 
 As with STE, the first step is to specify the sampling occasions. This can be done manually or with the function build_occ(). The sampling occasions should be in a data.frame or tibble with the following structure:
@@ -169,6 +159,14 @@ occ <- build_occ(samp_freq = 3600,
 `r knitr::kable(head(occ), caption = "example structure of occ")`
 
 ### Build your encounter history
+
+
+**NOTE** The assmume_p1 argument is crucial for getting accurate results. To build the encounter history, this code will look for photos at each camera during each occasion. If there are no photo there, should the model assume that no animals were present or that the camera malfunctioned?
+
+- assume_p1 = T: The camera did not take a photo because there were no animals present (For motion sensor photos; assuming p = 1) 
+
+- assume_p1 = F: The camera did not take a photo because it stopped functioning (For timelapse photos; assuming it was supposed to take a photo at every occasion)
+
 ```{r}
 ise_eh <- ise_build_eh(df, deploy, occ, assume0 = T) 
 head(ise_eh)
