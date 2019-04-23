@@ -1,4 +1,36 @@
 # Script for figuring out data checks.
+
+# Normal, motion-sensor
+df <- data.frame(
+  cam = c(1, 1, 2, 2, 2, 2, 2, 3),
+  datetime = as.POSIXct(c("2016-01-02 12:00:00",
+                          "2016-01-03 13:12:00",
+                          "2016-01-02 12:00:00",
+                          "2016-01-02 12:00:06",
+                          "2016-01-02 14:00:00",
+                          "2016-01-02 14:00:05",
+                          "2016-01-03 16:53:42",
+                          "2016-01-02 14:00:00"),
+                        tz = "GMT"),
+  count = c(1, 0, 0, 1, 1, 1, 2, 1)
+)
+deploy <- data.frame(
+  cam = c(1, 2, 2, 2, 3),
+  start = as.POSIXct(c("2015-12-01 15:00:00",
+                       "2015-12-08 00:00:00", 
+                       "2016-01-01 00:00:00", 
+                       "2016-01-02 00:00:00",
+                       "2016-01-01 00:00:00"),
+                     tz = "GMT"),
+  end = as.POSIXct(c("2016-01-05 00:00:00", 
+                     "2015-12-19 03:30:00", 
+                     "2016-01-01 05:00:00",
+                     "2016-01-05 00:00:00",
+                     "2016-01-05 00:00:00"), 
+                   tz = "GMT"),
+  area = c(300, 200, 200, 450, 300)
+)
+
  
 # Overlapping time intervals 
 deploy <- data.frame(
@@ -34,7 +66,7 @@ deploy_T <- df_T %>%
   select(cam, start, end, area)
 
 # df and deploy for Motion + Timelapse
-df_MT <- data.frame(
+df <- data.frame(
   cam = c(1,1,2,2,2,2),
   datetime = as.POSIXct(c("2016-01-02 12:00:00",
                           "2016-01-02 14:00:00",
@@ -47,7 +79,7 @@ df_MT <- data.frame(
   area = c(300, 300, 200, 200, 0, 450)
 )
 
-deploy_MT <- df_MT %>%
+deploy <- df %>%
   mutate(start = datetime, 
          end = start) %>%
   select(cam, start, end, area)

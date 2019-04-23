@@ -41,7 +41,7 @@
 #'             study_end = study_dates[2])
 #' ste_build_eh(df, deploy, occ)
 #' 
-ste_build_eh <- function(df, deploy, occ, assume_p1){
+ste_build_eh <- function(df, deploy, occ){
   
   # Run all my data checks here
   df <- validate_df(df)

@@ -1,7 +1,8 @@
 
 #' To do
-#' assume0 argument in STE and in ISE. 
-#' validate deploy_df after subsetting. Can't check that they have the same cameras before. 
+#' assume0 argument in STE and in ISE. (good that effort puts in 0s where things are missing from deploy)
+#'    STE is done. If deploy says the camera is working and there's no photo, the count is 0. 
+#'    Probably should be the same for ISE. If camera is on, no photo means count 0. 
 #' I need to look for count > 0 during the entire interval, not just in the first photo. Rewrite.  
 #' Test that version 2 of deploy actually works. 
 #' 

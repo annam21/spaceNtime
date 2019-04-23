@@ -4,7 +4,7 @@
 \alias{ste_build_eh}
 \title{Build STE encounter history}
 \usage{
-ste_build_eh(df, deploy, occ, assume_p1)
+ste_build_eh(df, deploy, occ)
 }
 \arguments{
 \item{df}{df object}

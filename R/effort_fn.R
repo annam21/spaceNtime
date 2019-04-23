@@ -4,6 +4,8 @@
 #' @param occ occasions dataframe or tibble
 #'
 #' @return a dataframe or tibble the with the area at each camera and occasion 
+#' @details If any occasion is missing from deploy for a camera, it is assumed 
+#' that the camera was not working at that time. 
 #' @export
 #' @importFrom lubridate "%within%"
 #'
