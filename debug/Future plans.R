@@ -1,0 +1,39 @@
+
+#' To do
+#' What does ste_estN_fn do if censor = 0? It doesn't fail... Is this good? 
+#' 
+#' assume0 argument in STE and in ISE. (good that effort puts in 0s where things are missing from deploy)
+#'    STE is done. If deploy says the camera is working and there's no photo, the count is 0. 
+#'    Probably should be the same for ISE. If camera is on, no photo means count 0.  
+#' Test that version 2 of deploy actually works. 
+#' 
+#' For timelapse photos: 
+#' We can find effort on each occasion using the function I wrote in 
+#' build_ise_eh. any NAs are when the camera wasn't functioning. 
+#' Deploy can be broader. Say deploy = df. and it doesn't have interals, now it is each time. 
+#' cam_occ_area <- effort_fn(deploy, occ)
+#' left_join(area_occ_cam , df). and 
+#' 
+#' validate_df_deploy very similar function to find_overlap. Work on that in future
+#'  
+#' 
+#' 
+#' 
+#' 
+#' Future plans
+#' For STE:
+#' build in forced data subset (skip)
+#' after subset, check that all cameras in df are in deploy (skip, because of timelapse photos)
+#' Change exp_logl_fn to take a dataframe (skip, because not sure how to do for TTE)
+#' Can you go through this whole workflow with a df subset by species? 
+#' Make functions work if you have dates in deploy instead of POSIXct
+#' create a data summary function for the user (maybe: summary(ste_eh) with class "STE")
+#' Could force functions to pick one area in deploy if end of one line and start of next are the same
+#' 
+#' 
+#' For IS:
+#' 
+#' For TTE: 
+#' NA because camera wasn't working is different than NA because no animals were detected... 
+
+
