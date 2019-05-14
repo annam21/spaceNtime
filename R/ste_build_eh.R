@@ -6,7 +6,6 @@
 #'
 #' @return a dataframe with new columns for space-to-event and censor
 #' @export
-#' @import tictoc
 #'
 #' @examples 
 #' df <- data.frame(
