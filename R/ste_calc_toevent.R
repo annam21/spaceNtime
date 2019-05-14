@@ -22,6 +22,7 @@ ste_calc_toevent <- function(df, occ, effort){
   # This captures any count within the occasion. Later, I get rid of 0s and 
   # take only the first
   count_at_occ <- df %>%
+    filter(count > 0) %>% 
     left_join(effort, .,  by = "cam") %>% 
     filter(datetime %within% int) %>%
     select(occ, cam, count)

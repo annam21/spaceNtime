@@ -40,6 +40,7 @@
 #' 
 ste_build_eh <- function(df, deploy, occ){
   
+  tictoc::tic("data checks")
   # Run all my data checks here
   df <- validate_df(df)
   deploy <- validate_deploy(deploy)
@@ -55,15 +56,23 @@ ste_build_eh <- function(df, deploy, occ){
   # Then validate df and deploy together (should really do after subset)
   validate_df_deploy(df_s, deploy_s) # This one is weird because it doesn't return anything if all good...
   
+  tictoc::toc()
+  
   # Build effort for each cam at each occasion
+  tictoc::tic("effort")
   eff <- effort_fn(deploy_s, occ)
+  tictoc::toc()
   
   # Calculate the censors
+  tictoc::tic("calculate censors")
   censor <- ste_calc_censor(eff)
+  tictoc::toc()
 
   # Calculate STE at each occasion
+  tictoc::tic("calculate STE")
   out <- ste_calc_toevent(df_s, occ, eff)   %>%
     mutate(censor = censor$censor)
+  tictoc::toc()
 
   return(out)
 }
