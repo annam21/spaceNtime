@@ -7,7 +7,7 @@
 #' @export
 #'
 #' @examples 
-#' ise_eh <- ise_build_eh(df, deploy, occ, assume0 = T) 
+#' ise_eh <- ise_build_eh(df, deploy, occ) 
 #' ise_estN_fn(ise_eh, 1e6)
 ise_estN_fn <- function(ise_eh, study_area){
 

@@ -18,6 +18,6 @@ a tibble with density and abundance estimate
 Estimate N through ISE
 }
 \examples{
-ise_eh <- ise_build_eh(df, deploy, occ, assume0 = T) 
+ise_eh <- ise_build_eh(df, deploy, occ) 
 ise_estN_fn(ise_eh, 1e6)
 }
