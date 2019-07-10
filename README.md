@@ -6,10 +6,10 @@ This is my first package and is very much in development, so it is guaranteed to
 ## Getting started 
 Please try installing the package and viewing the vignette.
 
+First, you will need to update to the newest version of R. Then run the following: 
+
 `devtools::install_github("annam21/spaceNtime", build_opts = c("--no-resave-data", "--no-manual"), force = T)`
 
 `browseVignettes("spaceNtime")`
 
 Then click on HTML. 
-
-If you're having trouble installing the package, try updating to the newest version of R. 
