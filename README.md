@@ -12,3 +12,4 @@ Please try installing the package and viewing the vignette.
 
 3. run `browseVignettes("spaceNtime")` Then click on HTML. 
 
+ 
