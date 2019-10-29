@@ -79,7 +79,7 @@ deploy <- data.frame(
   area = c(300, 200, 200, 450)
 )
 ```
-`r knitr::kable(deploy, caption = "deploy version 2")`
+`r knitr::kable(deploy, caption = "deploy version 1: functioning periods")`
 
 This version can be used for either motion-sensor or timelapse photos. Each row represents a period of **continuous functionality** for a camera. If a camera ever went offline then came back on, it should have multiple rows. For cameras with multiple entries, the time periods should never overlap. Whenever the camera's area changes, it should be entered as a new row. Setting area = 0 is equivalent to the camera not functioning. If a camera has any missing periods, it will be assumed that the camera was not working during that time.  
 
@@ -103,7 +103,7 @@ deploy1 <- df1 %>%
          end = start) %>%
   select(cam, start, end, area)
 ```
-`r knitr::kable(deploy1, caption = "deploy occasion-by-occasion")`
+`r knitr::kable(deploy1, caption = "deploy version 2: occasion-by-occasion")`
 
 This version of deploy should contain *every* functional photo (i.e., not obstructed or malfunctioning) taken during the study period. It will have the following columns, at a minimum:
 
