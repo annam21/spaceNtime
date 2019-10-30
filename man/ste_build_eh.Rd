@@ -31,7 +31,7 @@ df <- data.frame(
   count = c(1, 0, 2, 1, 2)
 )
 deploy <- data.frame(
-  cam = c(1, 2, 2, 2),
+  cam = c(1, 2, 2, 2), 
   start = as.POSIXct(c("2015-12-01 15:00:00",
                        "2015-12-08 00:00:00", 
                        "2016-01-01 00:00:00", 
