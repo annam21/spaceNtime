@@ -8,7 +8,7 @@ Please try installing the package and viewing the vignette.
 
 1. Update to the newest version of R
 
-2. run `devtools::install_github("annam21/spaceNtime", build_opts = c("--no-resave-data", "--no-manual"), force = T)`
+2. run `devtools::install_github("annam21/spaceNtime", build_opts = c("--no-resave-data", "--no-manual"), force = T, build_vignettes = T)`
 
 3. run `browseVignettes("spaceNtime")` Then click on HTML. 
 
