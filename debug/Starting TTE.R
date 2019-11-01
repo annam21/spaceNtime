@@ -41,21 +41,13 @@ occ <- build_occ(samp_freq = 3600 * 10, # seconds between the start of each samp
 lps <- 2 # length units per second
 samp_per <- mean(deploy$area)/lps
 
-# Building encounter history
-# in old code, TTE encounter history was a matrix with ncam rows and nocc cols
 
-# Data checks 
-# Build effort for each cam at each occasion
-tictoc::tic("effort")
-eff <- effort_fn(deploy, occ)
-tictoc::toc()
-# Calculate the censors 
-# Calculate TTE at each camera at each occasion
+# tte_calc_toevent(df, occ, effort)
 tmp <- df %>%
   filter(count > 0) %>%
   left_join(effort, .,  by = "cam") %>% 
   filter(datetime %within% int) %>%
- 
+  
   # Take only the first event in the sampling occasion
   group_by(cam, occ) %>% 
   filter(!duplicated(occ)) %>% 
@@ -65,7 +57,7 @@ tmp <- df %>%
   left_join(effort, ., by = c("occ", "cam")) %>% 
   # select(cam, occ, start, end, int, area) %>% 
   arrange(cam, occ) %>%
-
+  
   # Calculate TTE
   mutate(TTE = as.numeric(datetime) - as.numeric(start),
          TTE = TTE/samp_per) %>%
@@ -73,9 +65,60 @@ tmp <- df %>%
   # Calculate censor
   mutate(censor = as.numeric(end) - as.numeric(start),
          censor = censor/samp_per) 
+
+# Building encounter history
+# in old code, TTE encounter history was a matrix with ncam rows and nocc cols
+
+#tte_build_eh(df, deploy, occ)
+# Data checks 
+# Build effort for each cam at each occasion
+tictoc::tic("effort")
+eff <- effort_fn(deploy, occ)
+tictoc::toc()
+# Calculate TTE and censor
+out <- tte_calc_toevent(df, occ, effort)
+# return(out)
+
+
    
 # Check:
 # What happens to effort if the occasion is partly missing in deploy? 
 
-ste_eh <- ste_build_eh(df, deploy, occ)
-ste_estN_fn(ste_eh, study_area = 1e6)
+# Estimate abundance
+tte_eh <- tte_build_eh(df, deploy, occ)
+tte_estN_fn(tte_eh, study_area = 1e6)
+
+tte_estN_fn <- function(){}
+ste_estN_fn <- function(x, study_area){
+  
+  dat <- list(toevent = matrix(x$TTE, nrow = length(unique(x$cam))),
+              censor = x$censor)
+  
+  opt <- suppressWarnings(
+    stats::optim(log(1/mean(dat$toevent, na.rm = T)), 
+                 exp_logl_fn, 
+                 x = dat, 
+                 control = list(fnscale = -1),
+                 hessian = T)
+  )
+  
+  # Estimate of lambda
+  estlam <- exp(opt$par)
+  
+  # estlam is average density per m2
+  estN <- estlam * study_area
+  
+  # Delta method for variance
+  varB <- -1 * MASS::ginv(opt$hessian)
+  form <- sprintf("~ %f * exp(x1)", study_area)
+  SE_N <- msm::deltamethod(g = stats::as.formula(form), mean = opt$par, cov = varB, ses = T)
+  
+  CI <- logCI(estN, SE_N)
+  out <- data.frame(
+    N = estN, 
+    SE = SE_N
+  ) %>%
+    bind_cols(CI)
+  
+  return(out)
+}

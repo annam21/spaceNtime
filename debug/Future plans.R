@@ -4,7 +4,7 @@
 #' Build package documentation (list of all functions)
 #' hide internal functions 
 #' GitHub pages for the vignette. 
-#' 
+#' estNfn output density, make abundance a separate function 
 #' 
 #' 
 #' 
