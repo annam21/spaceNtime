@@ -40,7 +40,7 @@ The first, called df, is a data.frame or tibble that contains all your pictures 
 
 - datetime: The date and time of the photo (class POSIXct)
 
-- count: The count of your study species at each date and time (class numeric)
+- count: The count of your study species at each date and time. For STE and TTE, this can be simply species presence or absence (0 or 1) (class numeric)
 
 ```{r}
 df <- data.frame(

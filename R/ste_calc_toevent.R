@@ -19,8 +19,7 @@ ste_calc_toevent <- function(df, occ, effort){
   # If deploy said the camera was on and there is no photo, I'm assuming a count of 0. 
   
   # Find sampling occasions where counts exist
-  # This captures any count within the occasion. Later, I get rid of 0s and 
-  # take only the first
+  # This captures any count within the occasion. Later, I take only the first
   count_at_occ <- df %>%
     filter(count > 0) %>%
     left_join(effort, .,  by = "cam") %>% 

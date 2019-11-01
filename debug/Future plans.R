@@ -1,5 +1,14 @@
 
 #' To do
+#' 
+#' Build package documentation (list of all functions)
+#' hide internal functions 
+#' GitHub pages for the vignette. 
+#' 
+#' 
+#' 
+#' 
+#' 
 #' What does ste_estN_fn do if censor = 0? It doesn't fail... Is this good? 
 #' 
 #' Test that version 2 of deploy actually works. 
