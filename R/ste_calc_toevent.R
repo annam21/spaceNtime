@@ -14,7 +14,7 @@
 #'             study_start = study_dates[1],
 #'             study_end = study_dates[2])
 #'  eff <- effort_fn(deploy, occ)
-#'  calc_ste(df, occ, eff)
+#'  ste_calc_toevent(df, occ, eff)
 ste_calc_toevent <- function(df, occ, effort){
   # If deploy said the camera was on and there is no photo, I'm assuming a count of 0. 
   

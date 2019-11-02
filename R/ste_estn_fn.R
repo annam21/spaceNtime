@@ -2,9 +2,9 @@
 #' 
 #' A function to estimate abundance from an STE encounter history
 #'
-#' @param x A dataframe formulated by ste_data_fn or tte_data_fn.
+#' @param eh STE encounter history. A dataframe formulated by ste_build_eh
 #' @param study_area the size of the study area (same units as camera viewshed)
-#' @return A list, with the estimated abundance with its standard error and confidence intervals.
+#' @return A data.frame with the estimated abundance with its standard error and confidence intervals.
 #' @export
 #'
 #' @examples
@@ -36,12 +36,12 @@
 #'             samp_length = 10,
 #'             study_start = study_dates[1],
 #'             study_end = study_dates[2])
-#' build_ste_eh(df, deploy, occ)
+#' ste_build_eh(df, deploy, occ)
 #' ste_estN_fn(dat.ste, study_area = 1e6)
-ste_estN_fn <- function(x, study_area){
+ste_estN_fn <- function(eh, study_area){
   
-  dat <- list(toevent = matrix(x$STE, nrow = 1),
-              censor = x$censor)
+  dat <- list(toevent = matrix(eh$STE, nrow = 1),
+              censor = eh$censor)
   
   opt <- suppressWarnings(
     stats::optim(log(1/mean(dat$toevent, na.rm = T)), 
