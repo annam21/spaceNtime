@@ -39,10 +39,10 @@ tte_calc_toevent <- function(df, effort, samp_per){
     
     # Calculate TTE
     mutate(TTE = as.numeric(datetime) - as.numeric(start),
-           TTE = TTE/samp_per) %>%
+           TTE = TTE/samp_per*area) %>%
     
     # Calculate censor
     mutate(censor = as.numeric(end) - as.numeric(start),
-           censor = censor/samp_per) 
+           censor = censor/samp_per*area) 
   return(out)
 }
