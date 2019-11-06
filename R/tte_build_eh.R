@@ -1,12 +1,11 @@
-#' Build STE encounter history
+#' Build TTE encounter history
 #'
-#' @param df df object 
+#' @param df df object
 #' @param deploy deploy object
 #' @param occ tibble or dataframe specifying sampling occasions
 #'
-#' @return a dataframe with new columns for space-to-event and censor
+#' @return a dataframe with new columns for time-to-event and censor
 #' @export
-#'
 #' @examples 
 #' df <- data.frame(
 #'   cam = c(1,1,2,2,2),
@@ -33,20 +32,17 @@
 #'   area = c(300, 200, 200, 450)
 #' )
 #' study_dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
-#'occ <- build_occ(samp_freq = 3600, 
-#'             samp_length = 10,
-#'             study_start = study_dates[1],
-#'             study_end = study_dates[2])
-#' ste_build_eh(df, deploy, occ)
-#' 
-ste_build_eh <- function(df, deploy, occ){
-  
-  tictoc::tic("data checks")
-  # Run all my data checks here
+#' occ <- build_occ(samp_freq = 3600 * 10,
+#'                  samp_length = 3600 * 10, 
+#'                  study_start = study_dates[1],
+#'                  study_end = study_dates[2]) 
+#' tte_eh <- tte_build_eh(df, deploy, occ)
+tte_build_eh <- function(df, deploy, occ, samp_per){
+  # Data checks (exact same as STE)
   df <- validate_df(df)
   deploy <- validate_deploy(deploy)
   occ <- validate_occ(occ)
-
+  
   # Forcing a data subset so I can validate df and deploy together. 
   # Subset is not technically necessary because everything hinges on occ later.
   d1 <- min(occ$start)
@@ -64,16 +60,10 @@ ste_build_eh <- function(df, deploy, occ){
   eff <- effort_fn(deploy_s, occ)
   tictoc::toc()
   
-  # Calculate the censors
-  tictoc::tic("calculate censors")
-  censor <- ste_calc_censor(eff)
+  # Calculate TTE and censor
+  tictoc::tic("calculate TTE")
+  out <- tte_calc_toevent(df, eff, samp_per)
   tictoc::toc()
-
-  # Calculate STE at each occasion
-  tictoc::tic("calculate STE")
-  out <- ste_calc_toevent(df_s, occ, eff)   %>%
-    mutate(censor = censor$censor)
-  tictoc::toc()
-
+  
   return(out)
 }

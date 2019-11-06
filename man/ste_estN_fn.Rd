@@ -4,15 +4,15 @@
 \alias{ste_estN_fn}
 \title{Estimate abundance from STE}
 \usage{
-ste_estN_fn(x, study_area)
+ste_estN_fn(eh, study_area)
 }
 \arguments{
-\item{x}{A dataframe formulated by ste_data_fn or tte_data_fn.}
+\item{eh}{STE encounter history. A dataframe formulated by ste_build_eh}
 
 \item{study_area}{the size of the study area (same units as camera viewshed)}
 }
 \value{
-A list, with the estimated abundance with its standard error and confidence intervals.
+A data.frame with the estimated abundance with its standard error and confidence intervals.
 }
 \description{
 A function to estimate abundance from an STE encounter history
@@ -46,6 +46,6 @@ occ <- build_occ(samp_freq = 3600,
             samp_length = 10,
             study_start = study_dates[1],
             study_end = study_dates[2])
-build_ste_eh(df, deploy, occ)
+ste_build_eh(df, deploy, occ)
 ste_estN_fn(dat.ste, study_area = 1e6)
 }

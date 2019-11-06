@@ -38,44 +38,12 @@ occ <- build_occ(samp_freq = 3600 * 10, # seconds between the start of each samp
                  study_end = study_dates[2]) 
 
 # Sampling period length
-lps <- 2 # length units per second
-samp_per <- mean(deploy$area)/lps
+per <- tte_samp_per(deploy, lps = 0.0083)
 
 # Building encounter history
 # in old code, TTE encounter history was a matrix with ncam rows and nocc cols
 
-# Data checks 
-# Build effort for each cam at each occasion
-tictoc::tic("effort")
-eff <- effort_fn(deploy, occ)
-tictoc::toc()
-# Calculate the censors 
-# Calculate TTE at each camera at each occasion
-tmp <- df %>%
-  filter(count > 0) %>%
-  left_join(effort, .,  by = "cam") %>% 
-  filter(datetime %within% int) %>%
- 
-  # Take only the first event in the sampling occasion
-  group_by(cam, occ) %>% 
-  filter(!duplicated(occ)) %>% 
-  
-  # Join back up with all cams and occasions 
-  select(cam, occ, datetime, count) %>% 
-  left_join(effort, ., by = c("occ", "cam")) %>% 
-  # select(cam, occ, start, end, int, area) %>% 
-  arrange(cam, occ) %>%
+tte_eh <- tte_build_eh(df, deploy, occ, per)
 
-  # Calculate TTE
-  mutate(TTE = as.numeric(datetime) - as.numeric(start),
-         TTE = TTE/samp_per) %>%
-  
-  # Calculate censor
-  mutate(censor = as.numeric(end) - as.numeric(start),
-         censor = censor/samp_per) 
-   
-# Check:
-# What happens to effort if the occasion is partly missing in deploy? 
-
-ste_eh <- ste_build_eh(df, deploy, occ)
-ste_estN_fn(ste_eh, study_area = 1e6)
+# Estimate abundance
+tte_estN_fn(tte_eh, study_area = 1e6)
