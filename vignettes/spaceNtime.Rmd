@@ -132,7 +132,7 @@ occ <- build_occ(samp_freq = 3600, # seconds between the start of each sampling 
 
 ### Build your encounter history
 
-With one simple step, you can build your space-to-event encounter history. 
+With one simple step, you can build your space-to-event encounter history. There will be an NA on every occasion where no animals were detected. The model will treat these NAs as right-censors. 
 
 ```{r}
 ste_eh <- ste_build_eh(df, deploy, occ)
