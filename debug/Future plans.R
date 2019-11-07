@@ -7,7 +7,7 @@
 #' estNfn output density, make abundance a separate function 
 #' ste_calc_toevent doesn't need occ in function call 
 #' tte_estN_fn is basically the same as ste_estn_fn
-#' TTE: What happens to effort if the occasion is partly missing in deploy?  
+#' Bootstrap function for STE (using random sampling for occasions?)
 #' 
 #' 
 #' 
