@@ -30,9 +30,8 @@ ste_calc_toevent <- function(df, occ, effort){
   tmp <- effort %>%
     # Randomly order cameras at each occasion
     group_by(occ) %>% 
-    sample_n(n()) %>%
+    #sample_n(n()) %>%
     
-    # Join up our counts
     left_join(., count_at_occ, by = c("occ", "cam")) %>% 
     # Here NAs are pictures that didn't exist. 0s are counts of 0 
     # count should be NA if area = 0. 

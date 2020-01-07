@@ -38,30 +38,32 @@
 #'             study_end = study_dates[2])
 #' ste_build_eh(df, deploy, occ)
 #' 
-ste_build_eh <- function(df, deploy, occ){
+ste_build_eh <- function(df, stdy_start, stdy_end, cam_min = 5){
   
-  tictoc::tic("data checks")
+  #tictoc::tic("data checks")
   # Run all my data checks here
-  df <- validate_df(df)
-  deploy <- validate_deploy(deploy)
-  occ <- validate_occ(occ)
+  #df <- validate_df(df)
+  #deploy <- validate_deploy(deploy)
+  #occ <- validate_occ(occ)
 
   # Forcing a data subset so I can validate df and deploy together. 
   # Subset is not technically necessary because everything hinges on occ later.
-  d1 <- min(occ$start)
-  d2 <- max(occ$end)
-  df_s <- study_subset(df, "datetime", NULL, d1, d2)
-  deploy_s <- study_subset(deploy, "start", "end", d1, d2)
+  #d1 <- min(occ$start)
+  #d2 <- max(occ$end)
+  #df_s <- study_subset(df, "datetime", NULL, d1, d2)
+  #deploy_s <- study_subset(deploy, "start", "end", d1, d2)
   
   # Then validate df and deploy together (should really do after subset)
-  validate_df_deploy(df_s, deploy_s) # This one is weird because it doesn't return anything if all good...
+  #validate_df_deploy(df_s, deploy_s) # This one is weird because it doesn't return anything if all good...
   
-  tictoc::toc()
+  #tictoc::toc()
   
   # Build effort for each cam at each occasion
-  tictoc::tic("effort")
-  eff <- effort_fn(deploy_s, occ)
-  tictoc::toc()
+  #tictoc::tic("effort")
+  #eff <- effort_fn(deploy_s, occ)
+  #tictoc::toc()
+  
+  eff <- snt_effort_alt(df, stdy_start, stdy_end, cam_min)
   
   # Calculate the censors
   tictoc::tic("calculate censors")
@@ -70,8 +72,9 @@ ste_build_eh <- function(df, deploy, occ){
 
   # Calculate STE at each occasion
   tictoc::tic("calculate STE")
-  out <- ste_calc_toevent(df_s, occ, eff)   %>%
-    mutate(censor = censor$censor)
+  out <- ste_calc_toevent_alt(eff) %>%
+    left_join(censor, by = "occ") %>%
+    replace_na(list(censor = 0))
   tictoc::toc()
 
   return(out)
