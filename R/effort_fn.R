@@ -21,7 +21,7 @@ effort_fn <- function(deploy, occ){
   # Try interval overlap to combine the two
   effort <- occ_by_cam %>% 
     rename(occ_int = int) %>%
-    left_join(., deploy, by = "cam") %>%
+    left_join(deploy, by = "cam") %>%
     filter(lubridate::int_overlaps(occ_int, int) ) %>% 
     select(occ, cam, area) %>%
     left_join(occ_by_cam, ., by = c("occ", "cam")) %>% 

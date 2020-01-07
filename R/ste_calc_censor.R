@@ -16,5 +16,6 @@ ste_calc_censor <- function(effort){
   # Just requires effort 
   effort %>% 
     group_by(occ) %>% 
-    summarise(censor = sum(area))
+    summarise(censor = sum(area)) %>%
+    ungroup()
 }
