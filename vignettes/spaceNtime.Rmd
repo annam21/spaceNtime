@@ -5,6 +5,7 @@ vignette: >
   %\VignetteIndexEntry{spaceNtime}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+author: "Anna Moeller"
 ---
 
 ```{r setup, include = FALSE}
