@@ -12,12 +12,10 @@
 #' @examples validate_df(df)
 validate_df <- function(df){
   df %>%
-    verify(has_all_names("cam", "datetime", "count", "area")) %>%
+    verify(has_all_names("cam", "datetime", "count")) %>%
     verify(lubridate::is.POSIXct(datetime)) %>% 
     verify(is.numeric(count)) %>% 
-    verify(count >= 0) %>% 
-    verify(is.numeric(area)) %>% 
-    verify(area >= 0)
+    verify(count >= 0)
 }
 
 
@@ -52,7 +50,10 @@ validate_start_end <- function(x){
 #' @examples validate_deploy(deploy)
 validate_deploy <- function(deploy){
   deploy %>% 
-    verify(has_all_names("cam", "start", "end")) %>%
+    verify(has_all_names("cam", "start", "end", "area")) %>% 
+    # Check class of all columns
+    verify(is.numeric(area)) %>% 
+    verify(area >= 0) %>%
     # Check start and end
     validate_start_end(.)
   
