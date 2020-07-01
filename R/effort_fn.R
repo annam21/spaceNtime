@@ -20,16 +20,18 @@ effort_fn <- function(deploy, occ){
   
   # Try interval overlap to combine the two
   effort <- occ_by_cam %>% 
-    rename(occ_int = int) %>%
-    left_join(., deploy, by = "cam") %>%
-    filter(lubridate::int_overlaps(occ_int, int) ) %>% 
-    select(occ, cam, area) %>%
-    left_join(occ_by_cam, ., by = c("occ", "cam")) %>% 
-    mutate(area = replace(area, is.na(area), 0)) %>%
+    rename(occ_int = int) %>% #.02s
+    left_join(., deploy, by = "cam") %>% # 2s
+    filter(lubridate::int_overlaps(occ_int, int) ) %>% #5s
+    select(occ, cam, area) %>% # 5s
+    left_join(occ_by_cam, ., by = c("occ", "cam")) %>% #18s #### big time suck
+    mutate(area = replace(area, is.na(area), 0)) %>% #19s
     
     # get rid of duplicate rows (if area changed during occasion)
-    group_by(occ, cam, start, end, int) %>%
-    summarise(area = first(area)) %>%
+    # Original way - stupid and slow. 
+    # group_by(occ, cam, start, end, int) %>% #60s HUGE time suck for some reason... ####
+    # summarise(area = first(area)) %>% # ridiculous time suck. completely broken.
+    distinct(occ, cam, .keep_all = T) %>% #23s
     ungroup()
 
   return(effort)
