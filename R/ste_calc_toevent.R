@@ -33,6 +33,8 @@ ste_calc_toevent <- function(df, occ, effort){
       filter(count > 0) %>%
       left_join(effort, .,  by = "cam") %>%
       filter(datetime %within% int) %>%
+      # Take only the first at each camera at each occasion
+      distinct(occ, cam, .keep_all = T) %>%
       select(occ, cam, count)
     
   } else {
@@ -61,7 +63,7 @@ ste_calc_toevent <- function(df, occ, effort){
     # Here NAs are pictures that didn't exist. 0s are counts of 0 
     # count should be NA if area = 0. 
     
-    # Find the area until the first count, at each occcasion
+    # Find the area until the first count, at each occasion
     mutate(STE = cumsum(area)) %>% 
     # If the area is 0, it's just adding 0 to the STE. That's good. 
     filter(count > 0) %>% 
