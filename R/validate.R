@@ -85,7 +85,7 @@ validate_df_deploy <- function(df, deploy){
   
   # Fail if a camera took a photo but that time is not in deploy
   # Very similar function to find_overlap. Work on that in future
-  pic_in_deploy <- left_join(df, deploy) %>% 
+  pic_in_deploy <- left_join(df, deploy, by = "cam") %>% 
       mutate(wthn = datetime >= start & datetime <= end) %>% 
       group_by(cam) %>% 
       summarise(allgood = any(wthn)) %>%
