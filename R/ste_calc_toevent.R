@@ -22,12 +22,9 @@ ste_calc_toevent <- function(df, occ, effort){
   # I'm including the fast and slow way to find which occasion a picture is in
   
   # Calculate the lowest common denominator for samp_freq 
-  t <- occ %>% 
-    mutate(d = as.numeric(difftime(start, lag(start), units = "secs")),
-           m = min(d, na.rm = T),
-           r = d %% m)
+  ss <- lcd_fn(occ)
   
-  if(any(t$r > 0, na.rm = T)){
+  if(ss == 0){
     warning("Occasions are not evenly spaced, so ste_calc_toevent must go the slow 
             route")
     # Find sampling occasions where counts exist
@@ -41,7 +38,6 @@ ste_calc_toevent <- function(df, occ, effort){
   } else {
     
     # Do it with rounding instead of intervals!!! 
-    ss <- t$m[1]
     count_at_occ <- df %>%
       filter(count > 0) %>%
       # round down to the nearest interval
@@ -55,47 +51,6 @@ ste_calc_toevent <- function(df, occ, effort){
       select(occ, cam, count) 
   }
   
-  ### begin practice 
- 
- 
-  # See if I can do this in two steps to make it faster...
-  # t1 <- df %>%
-  #   filter(count > 0) %>%
-  #   mutate(date = as.Date(datetime))
-  # # filter(date == as.Date("2016-01-22"))
-  # # distinct(cam, count, date, .keep_all = T)
-  # t2 <- effort %>%
-  #   mutate(date = as.Date(start))
-  # # distinct(cam, area, date, .keep_all = T)
-  # t3 <- left_join(t1, t2, by = c("cam", "date")) %>%
-  #   filter(datetime %within% int)
-  # 
-  # t3 <- left_join(t2, t1, by = c("cam", "date") ) %>%
-  #   filter(datetime %within% int) %>%
-  #   select(occ, cam, count).
-  # NO! we just need to get the occ number for each photo!!!!
-  # # THEN we add back the camera number.
-  # t1 <- df %>%
-  #   filter(count > 0) %>%
-  #   distinct(datetime) %>%
-  #   mutate(date = as.Date(datetime))
-  # # filter(date < as.Date("2016-01-02"))
-  # t2 <- effort %>%
-  #   select(-cam, -area) %>%
-  #   distinct(int, .keep_all = T) %>%
-  #   mutate(date = as.Date(start))
-  # t3 <- full_join(t1, t2, by = "date") %>% 
-  #   filter(datetime %within% int)
-  
-  # What I want to do is:
-  # Find out if the picture is in ANY occasion. Nope. 
-  # for(i in 1:nrow(t1)){
-  #   t1$anyin[i] <- any(t1$datetime[i] %within% t2$int)
-  # }
-  # 
-
-  #end practice
-
   tmp <- effort %>%
     # Randomly order cameras at each occasion
     group_by(occ) %>% 
