@@ -1,6 +1,6 @@
 Package: spaceNtime
 Title: Run TTE, STE, and IS Models
-Version: 2.0.0
+Version: 1.1.1
 Authors@R: person("Anna", "Moeller", email = "anna.moeller@umontana.edu", role = c("aut", "cre"))
 Description: This package contains code to run Time-to-Event, Space-to-Event, and 
     Instantaneous Sampling methods to estimate abundance of unmarked animals.
