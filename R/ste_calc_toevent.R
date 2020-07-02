@@ -49,8 +49,13 @@ ste_calc_toevent <- function(df, occ, effort){
                                      origin = min(effort$start), 
                                      tz = lubridate::tz(effort$start))
       ) %>%
-      left_join(effort, ., by = c("start" = "nearestpos", "cam")) %>%
-      select(occ, cam, count) 
+      # Join by the start time of that interval
+      left_join(., effort, by = c("nearestpos" = "start", "cam")) %>%
+      # But then keep only if within the end date of that interval
+      filter(datetime <= end) %>% 
+      select(occ, cam, count) %>%
+      # Only keep the first one at each camera on each occasion
+      distinct(occ, cam, .keep_all = T)
   }
   
   tmp <- effort %>%
