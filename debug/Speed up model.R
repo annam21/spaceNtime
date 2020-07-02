@@ -27,11 +27,11 @@
     ) %>%
     select(-op.start, -op.end) 
   
-  study_dates <- as.POSIXct(c("2016-01-01 00:00:01", "2016-03-27 00:00:00"), 
+  study_dates <- as.POSIXct(c("2016-01-01 01:04:18", "2016-03-27 00:00:00"), 
                             tz = "GMT")
   
   # Now actually use the package 
-  occ <- build_occ(samp_freq = 30,
+  occ <- build_occ(samp_freq = 4000,
                    samp_length = 1,
                    study_start = study_dates[1],
                    study_end = study_dates[2])
