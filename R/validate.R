@@ -76,7 +76,7 @@ validate_deploy <- function(deploy){
 #' @export
 #'
 #' @examples validate_df_deploy(df, deploy)
-validate_df_deploy <- function(df, deploy, lcd){
+validate_df_deploy <- function(df, deploy){
   stopifnot(lubridate::tz(deploy$start) == lubridate::tz(df$datetime))
   
   # # Fail if a camera in df is not in deploy
@@ -90,8 +90,10 @@ validate_df_deploy <- function(df, deploy, lcd){
       group_by(cam) %>% 
       summarise(allgood = any(wthn)) %>%
       filter(allgood == F | is.na(allgood))
-   
-  if(nrow(pic_in_deploy) > 0) stop(paste("There are photos at cam(s)", pic_in_deploy$cam, "outside intervals specified in deploy"))
+  
+  if(nrow(pic_in_deploy) > 0) stop(paste("There are photos at cam", 
+                                         pic_in_deploy$cam, 
+                                         "outside intervals specified in deploy"))
   
 }
 
