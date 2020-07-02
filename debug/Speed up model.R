@@ -1,7 +1,8 @@
   # Speed up model using real data
   # Anna Moeller 
   # 7/1/2020
-   
+  
+  library(tidyverse)
   # Load pictures
   load("../CameraTrapStudy/2015 data/pics.wide20160804.RData")
 
@@ -26,11 +27,11 @@
     ) %>%
     select(-op.start, -op.end) 
   
-  study_dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-03-27 00:00:00"), 
+  study_dates <- as.POSIXct(c("2016-01-01 00:00:01", "2016-03-27 00:00:00"), 
                             tz = "GMT")
   
   # Now actually use the package 
-  occ <- build_occ(samp_freq = 4000,
+  occ <- build_occ(samp_freq = 30,
                    samp_length = 1,
                    study_start = study_dates[1],
                    study_end = study_dates[2])
@@ -48,6 +49,9 @@
   #   area = c(250, 100)
   # )
   
+  
+  ### How to pick up tomorrow
+  # think about changing all intervals to rounding instead. 
   
   ste_eh <- ste_build_eh(df, deploy, occ)
  
