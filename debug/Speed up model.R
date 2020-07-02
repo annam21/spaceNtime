@@ -1,7 +1,8 @@
   # Speed up model using real data
   # Anna Moeller 
   # 7/1/2020
-   
+  
+  library(tidyverse)
   # Load pictures
   load("../CameraTrapStudy/2015 data/pics.wide20160804.RData")
 
@@ -26,7 +27,7 @@
     ) %>%
     select(-op.start, -op.end) 
   
-  study_dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-03-27 00:00:00"), 
+  study_dates <- as.POSIXct(c("2016-01-01 01:04:18", "2016-03-27 00:00:00"), 
                             tz = "GMT")
   
   # Now actually use the package 
@@ -48,6 +49,9 @@
   #   area = c(250, 100)
   # )
   
+  
+  ### How to pick up tomorrow
+  # think about changing all intervals to rounding instead. 
   
   ste_eh <- ste_build_eh(df, deploy, occ)
  

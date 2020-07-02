@@ -28,9 +28,6 @@ effort_fn <- function(deploy, occ){
     mutate(area = replace(area, is.na(area), 0)) %>% #19s
     
     # get rid of duplicate rows (if area changed during occasion)
-    # Original way - stupid and slow. 
-    # group_by(occ, cam, start, end, int) %>% #60s HUGE time suck for some reason... ####
-    # summarise(area = first(area)) %>% # ridiculous time suck. completely broken.
     distinct(occ, cam, .keep_all = T) %>% #23s
     ungroup()
 
