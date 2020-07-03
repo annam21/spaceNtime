@@ -3,6 +3,8 @@
 #' @param df df object
 #' @param deploy deploy object
 #' @param occ tibble or dataframe specifying sampling occasions
+#' @param samp_per 
+#' @param ... optional arguments, including quiet = T to suppress time messages
 #'
 #' @return a dataframe with new columns for time-to-event and censor
 #' @export
@@ -37,7 +39,7 @@
 #'                  study_start = study_dates[1],
 #'                  study_end = study_dates[2]) 
 #' tte_eh <- tte_build_eh(df, deploy, occ)
-tte_build_eh <- function(df, deploy, occ, samp_per){
+tte_build_eh <- function(df, deploy, occ, samp_per, ...){
   # Data checks (exact same as STE)
   df <- validate_df(df)
   deploy <- validate_deploy(deploy)
@@ -53,17 +55,17 @@ tte_build_eh <- function(df, deploy, occ, samp_per){
   # Then validate df and deploy together (should really do after subset)
   validate_df_deploy(df_s, deploy_s) # This one is weird because it doesn't return anything if all good...
   
-  tictoc::toc()
+  tictoc::toc(...)
   
   # Build effort for each cam at each occasion
   tictoc::tic("effort")
   eff <- effort_fn(deploy_s, occ)
-  tictoc::toc()
+  tictoc::toc(...)
   
   # Calculate TTE and censor
   tictoc::tic("calculate TTE")
   out <- tte_calc_toevent(df, eff, samp_per)
-  tictoc::toc()
+  tictoc::toc(...)
   
   return(out)
 }

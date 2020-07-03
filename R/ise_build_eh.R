@@ -2,8 +2,8 @@
 #'
 #' @param df df object
 #' @param deploy deploy object 
+#' @param ... optional arguments, including quiet = T to suppress time messages
 #' @param occ occ object
-#' @param assume0 if T: assume that no picture = no animal. If F: assume that no picture = camera not working
 #'
 #' @return a data frame with encounter history for instantaneous sampling 
 #' @export
@@ -38,8 +38,9 @@
 #'             study_start = study_dates[1],
 #'             study_end = study_dates[2])
 #' ise_build_eh(df, deploy, occ, assume0 = T)
-ise_build_eh <- function(df, deploy, occ){
+ise_build_eh <- function(df, deploy, occ, ...){
 
+  tictoc::tic("data checks")
   # Run all my data checks here
   df <- validate_df(df)
   deploy <- validate_deploy(deploy)
@@ -55,12 +56,16 @@ ise_build_eh <- function(df, deploy, occ){
   
   # Then validate df and deploy together (should really do after subset)
   validate_df_deploy(df_s, deploy_s) # This one is weird because it doesn't return anything if all good...
+  tictoc::toc(...)
   
   # Build effort for each cam at each occasion
+  tictoc::tic("effort")
   eff <- effort_fn(deploy_s, occ)
+  tictoc::toc(...)
   
   ### All lines until here are same as in STE... think about new fn. 
   
+  tictoc::tic("build encounter history")
   # Build ISE EH
   ise <- eff %>% 
     left_join(., df_s, by = "cam") %>%
@@ -70,6 +75,7 @@ ise_build_eh <- function(df, deploy, occ){
     select(-int) %>% 
     mutate(count = replace(count, is.na(count) & area > 0, 0))
     # as long as area >0, deploy said the camera was on. So we're going to fill in count = 0
-
+  tictoc::toc(...)
+  
  return(ise)
 }
