@@ -1,5 +1,5 @@
 Package: spaceNtime
-Title: Run TTE, STE, and IS Models
+Title: Run STE, TTE, and IS Models
 Version: 1.1.2
 Authors@R: person("Anna", "Moeller", email = "anna.moeller@umontana.edu", role = c("aut", "cre"))
 Description: This package contains code to run Time-to-Event, Space-to-Event, and 
