@@ -1,10 +1,9 @@
-#' Estimate abundance from STE
-#' 
-#' A function to estimate abundance from an STE encounter history
+#' Estimate abundance with time-to-event (TTE)
 #'
-#' @param eh STE encounter history. A dataframe formulated by ste_build_eh
-#' @param study_area the size of the study area (same units as camera viewshed)
-#' @return A data.frame with the estimated abundance with its standard error and confidence intervals.
+#' @param eh TTE encounter history. A data.frame formulated by tte_build_eh
+#' @param study_area Size of the study area (same units as camera viewshed)
+#'
+#' @return A data.frame with the estimated abundance with its standard error and confidence intervals
 #' @export
 #'
 #' @examples
@@ -19,7 +18,7 @@
 #'   count = c(1, 0, 2, 1, 2)
 #' )
 #' deploy <- data.frame(
-#'   cam = c(1, 2, 2, 2),
+#'   cam = c(1, 2, 2, 2), 
 #'   start = as.POSIXct(c("2015-12-01 15:00:00",
 #'                        "2015-12-08 00:00:00", 
 #'                        "2016-01-01 00:00:00", 
@@ -32,23 +31,24 @@
 #'                    tz = "GMT"),
 #'   area = c(300, 200, 200, 450)
 #' )
-#'occ <- build_occ(samp_freq = 3600, 
-#'             samp_length = 10,
-#'             study_start = study_dates[1],
-#'             study_end = study_dates[2])
-#' ste_build_eh(df, deploy, occ)
-#' ste_estN_fn(dat.ste, study_area = 1e6)
-ste_estN_fn <- function(eh, study_area){
+#' study_dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
+#' occ <- build_occ(samp_freq = 3600 * 10,
+#'                  samp_length = 3600 * 10, 
+#'                  study_start = study_dates[1],
+#'                  study_end = study_dates[2]) 
+#' tte_eh <- tte_build_eh(df, deploy, occ)
+#' tte_estN_fn(tte_eh, 1e6)
+tte_estN_fn <- function(eh, study_area){
   
-  dat <- list(toevent = matrix(eh$STE, nrow = 1),
+  dat <- list(toevent = matrix(eh$TTE, nrow = length(unique(eh$cam))),
               censor = eh$censor)
   
   opt <- suppressWarnings(
     stats::optim(log(1/mean(dat$toevent, na.rm = T)), 
-               exp_logl_fn, 
-               x = dat, 
-               control = list(fnscale = -1),
-               hessian = T)
+                 exp_logl_fn, 
+                 x = dat, 
+                 control = list(fnscale = -1),
+                 hessian = T)
   )
   
   # Estimate of lambda
@@ -66,7 +66,7 @@ ste_estN_fn <- function(eh, study_area){
   out <- data.frame(
     N = estN, 
     SE = SE_N
-    ) %>%
+  ) %>%
     bind_cols(CI)
   
   return(out)

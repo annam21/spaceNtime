@@ -5,6 +5,7 @@ vignette: >
   %\VignetteIndexEntry{spaceNtime}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+author: "Anna Moeller"
 ---
 
 ```{r setup, include = FALSE}
@@ -16,10 +17,6 @@ knitr::opts_chunk$set(
 ```
 
 The package spaceNtime was created to assist with analyses described in ["Three novel methods to estimate abundance of unmarked animals using remote cameras" by Moeller et al. (2018)](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.2331). This package helps the user create an encounter history from a database of analyzed photos and run each of the models.
-
-Currently, this package only includes STE, but the other methods are on their way. 
-
-This is my first package and is very much in development, so it is guaranteed to have bugs. I would appreciate hearing from you if you encounter problems!
 
 ## Load the package
 If you haven't already installed it, please see instructions at the bottom of my [Github repository](https://github.com/annam21/spaceNtime)
@@ -117,9 +114,6 @@ This version of deploy should contain *every* functional photo (i.e., not obstru
 
 The area should be 0 on any occasion that the camera was obstructed or malfunctioning. 
 
-## Time-to-Event
-This is in progress. No code yet.
-
 ## Space-to-Event
 ### Specify occasions
 
@@ -135,7 +129,7 @@ occ <- build_occ(samp_freq = 3600, # seconds between the start of each sampling 
 
 ### Build your encounter history
 
-With one simple step, you can build your space-to-event encounter history. 
+With one simple step, you can build your space-to-event encounter history. There will be an NA on every occasion where no animals were detected. The model will treat these NAs as right-censors. 
 
 ```{r}
 ste_eh <- ste_build_eh(df, deploy, occ)
@@ -150,6 +144,46 @@ Be sure to specify your study_area size in the same units as your camera visible
 ```{r}
 ste_estN_fn(ste_eh, study_area = 1e6)
 ```
+
+
+
+
+## Time-to-Event
+Time-to-event uses the same df and deploy as specified in STE. 
+
+### Specify occasions
+
+As with STE, the first step is to specify the sampling occasions. This can be done manually or with the function build_occ(). The sampling occasions should be in a data.frame or tibble with the following structure:
+```{r}
+study_dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
+occ <- build_occ(samp_freq = 3600 * 10,
+                 samp_length = 3600 * 8,
+                 study_start = study_dates[1],
+                 study_end = study_dates[2])
+```
+`r knitr::kable(head(occ), caption = "example structure of occ")`
+
+The second piece is to define the length of your sampling period. This is equal to the mean amount of time (in seconds) that it takes for an animal to cross the average viewshed of a camera. This can be calculated in different ways. A crude method for estimating sampling period exists with the function tte_samp_per. An example, based on an animal speed of 30m/hr is: 
+
+```{r}
+per <- tte_samp_per(deploy, lps = 30/3600)
+```
+
+### Build your encounter history
+```{r}
+tte_eh <- tte_build_eh(df, deploy, occ,  per) 
+head(tte_eh)
+```
+
+### Estimate abundance 
+```{r}
+tte_estN_fn(
+  tte_eh,
+  study_area = 1e6
+)
+```
+
+
 
 ## Instantaneous Sampling
 ### Specify occasions

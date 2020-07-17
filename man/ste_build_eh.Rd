@@ -4,7 +4,7 @@
 \alias{ste_build_eh}
 \title{Build STE encounter history}
 \usage{
-ste_build_eh(df, deploy, occ)
+ste_build_eh(df, deploy, occ, ...)
 }
 \arguments{
 \item{df}{df object}
@@ -12,6 +12,8 @@ ste_build_eh(df, deploy, occ)
 \item{deploy}{deploy object}
 
 \item{occ}{tibble or dataframe specifying sampling occasions}
+
+\item{...}{optional arguments, including quite = T to suppress messages}
 }
 \value{
 a dataframe with new columns for space-to-event and censor
@@ -44,6 +46,7 @@ deploy <- data.frame(
                    tz = "GMT"),
   area = c(300, 200, 200, 450)
 )
+study_dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
 occ <- build_occ(samp_freq = 3600, 
             samp_length = 10,
             study_start = study_dates[1],
