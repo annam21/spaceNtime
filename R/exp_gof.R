@@ -26,7 +26,9 @@ exp_dens <- function(left, right, lambda){
 }
 
 build_bins <- function(n_bins, censor, lambda){
+  
   cutoffs <- seq(0, censor, length.out = n_bins)
+  
   bin_data <- tibble(
     bin = 1:n_bins, 
     left = cutoffs, 
