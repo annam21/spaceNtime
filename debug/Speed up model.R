@@ -48,10 +48,23 @@
   #   # end = "2016-01-08 17:00:01", "2016-01-10 18:00:00" ), tz = "GMT"),
   #   area = c(250, 100)
   # )
-  
-  
-  ### How to pick up tomorrow
-  # think about changing all intervals to rounding instead. 
-  
+
+  # Test it out  
   ste_eh <- ste_build_eh(df, deploy, occ, quiet = T)
- 
+  
+##################################################################################
+  # Time to event 
+  tte_occ <- build_occ(samp_freq = 3600*10,
+                      samp_length = 3600*8, 
+                      study_start = study_dates[1],
+                      study_end = study_dates[2])
+  
+  #()
+  effort <- effort_fn(deploy, tte_occ)
+  
+  # Run it
+  per <- tte_samp_per(deploy, lps = 36/3600)
+  tte_eh <- tte_build_eh(df, deploy, tte_occ, per)  
+  
+  
+  

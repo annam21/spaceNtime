@@ -1,6 +1,8 @@
 
 #' To do
 #' 
+#' Look at tte_build_eh and make sure it works 
+#' Change all intervals to rounding if possible. 
 #' hide internal functions 
 #' GitHub pages for the vignette. 
 #' estNfn output density, make abundance a separate function 
