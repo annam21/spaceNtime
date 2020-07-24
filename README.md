@@ -11,6 +11,7 @@ Please try installing the package and viewing the vignette.
 2. run `devtools::install_github("annam21/spaceNtime", force = T, build_vignettes = T)`
 
 3. run `browseVignettes("spaceNtime")` Then click on HTML. 
+Note: RStudio 1.3.159 does not respond to this command. If nothing happens, try running the command in R rather than RStudio.
 
 4. Also see `??spaceNtime` for additional resources.
 
