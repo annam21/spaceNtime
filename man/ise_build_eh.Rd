@@ -4,7 +4,7 @@
 \alias{ise_build_eh}
 \title{Build ISE encounter history}
 \usage{
-ise_build_eh(df, deploy, occ)
+ise_build_eh(df, deploy, occ, ...)
 }
 \arguments{
 \item{df}{df object}
@@ -13,7 +13,7 @@ ise_build_eh(df, deploy, occ)
 
 \item{occ}{occ object}
 
-\item{assume0}{if T: assume that no picture = no animal. If F: assume that no picture = camera not working}
+\item{...}{optional arguments, including quiet = T to suppress time messages}
 }
 \value{
 a data frame with encounter history for instantaneous sampling

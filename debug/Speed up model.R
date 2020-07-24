@@ -31,7 +31,7 @@
                             tz = "GMT")
   
   # Now actually use the package 
-  occ <- build_occ(samp_freq = 4000,
+  occ <- build_occ(samp_freq = 40000,
                    samp_length = 1,
                    study_start = study_dates[1],
                    study_end = study_dates[2])
@@ -53,5 +53,5 @@
   ### How to pick up tomorrow
   # think about changing all intervals to rounding instead. 
   
-  ste_eh <- ste_build_eh(df, deploy, occ)
+  ste_eh <- ste_build_eh(df, deploy, occ, quiet = T)
  

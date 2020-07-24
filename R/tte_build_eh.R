@@ -40,6 +40,8 @@
 #'                  study_end = study_dates[2]) 
 #' tte_eh <- tte_build_eh(df, deploy, occ)
 tte_build_eh <- function(df, deploy, occ, samp_per, ...){
+  
+  tictoc::tic("Data checks")
   # Data checks (exact same as STE)
   df <- validate_df(df)
   deploy <- validate_deploy(deploy)
