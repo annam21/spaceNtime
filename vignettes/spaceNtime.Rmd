@@ -185,7 +185,7 @@ tte_estN_fn(
 
 
 
-## Instantaneous Sampling
+## Instantaneous Sampling Estimator
 ### Specify occasions
 
 As with STE, the first step is to specify the sampling occasions. This can be done manually or with the function build_occ(). The sampling occasions should be in a data.frame or tibble with the following structure:
