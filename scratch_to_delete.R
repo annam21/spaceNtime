@@ -3,6 +3,7 @@
 # July 2020
 
 #Recreate_vignette_objects======================================================
+require(spaceNtime); require(dplyr); require(purrr)
 
 df <- data.frame(
   cam = c(1,1,2,2,2),
@@ -37,10 +38,9 @@ occ <- build_occ(samp_freq = 3600, # seconds between the start of each sampling 
                  study_start = study_dates[1],
                  study_end = study_dates[2])
 
-ste_eh <- ste_build_eh(df, deploy, occ)
+eh <- ste_build_eh(df, deploy, occ)
+n_bins <- 5
+lambda <- 0.001
 
-exp_gof_test <- function(eh, study_area, n_bins){
-  
-  
-}
-
+build_gof_bins_eq(eh, 5, 0.001)
+build_gof_bins_var(eh, 5, 0.001)
