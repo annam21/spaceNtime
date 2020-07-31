@@ -1,4 +1,4 @@
-build_gof_bins_eq <- function(eh, nbins, lambda){
+build_gof_bins_eq <- function(eh, n_bins, lambda){
   # function to build bins for goodness of fit test with bin cutoffs the same
     # for every occasion
   # bin probabilities vary between occasions when (cesnor < max(censor))
