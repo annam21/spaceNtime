@@ -2,8 +2,8 @@
 # Kenneth Loonam
 # July 2020
 
-#Recreate_vignette_objects======================================================
-require(spaceNtime); require(dplyr); require(purrr); require(assertr)
+#STE_EXP_Workflow===============================================================
+require(spaceNtime); require(dplyr); require(purrr)
 
 df <- data.frame(
   cam = c(1,1,2,2,2),
@@ -39,9 +39,19 @@ occ <- build_occ(samp_freq = 3600, # seconds between the start of each sampling 
                  study_end = study_dates[2])
 
 eh <- ste_build_eh(df, deploy, occ)
-n_bins <- 5
+n_bins <- c(2,3,5)
 lambda <- 0.001
-bin_cuts <- "equal"
+bin_cuts <- "fixed"
 source("R\\build_gof_bins_eq.R"); source("R\\build_gof_bins_var.R")
 source("R\\gof_bins_var_int.R"); source("R\\exponential_density.R")
-source("R\\assign_bins.R")
+source("R\\assign_bins.R"); source("R//exp_gof_test.R")
+
+#STE_EXP_Workflow===============================================================
+require(spaceNtime); require(dplyr); require(purrr); require(assertthat)
+
+count <- rpois(100,.5)
+n_bins <- c(2,3,5)
+lambda <- 0.01
+source("R\\pois_density.R"); source("R\\pois_gof_test.R")
+
+pois_gof_test(count, n_bins, lambda)
