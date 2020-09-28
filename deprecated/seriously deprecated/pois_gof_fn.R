@@ -45,6 +45,22 @@ pois_gof_STE <- function(n_bins, lambda, df, deploy, occ){
     sample_n(n()) %>%
     
     # Join up our counts
-    left_join(., count_at_occ, by = c("occ", "cam"))
+    left_join(., count_at_occ, by = c("occ", "cam")) %>%
+    mutate(count = tidyr::replace_na(count, 0))
+  
+  tmp2 <- map(n_bins, pois_gof_test, count = tmp$count, lambda = lambda)
+  
+  out <- list(
+    summary = bind_rows(map(
+      .x = tmp2, 
+      .f = function(x) x$summary
+    )),
+    tables = map(
+      .x = tmp2,
+      .f = function(x) x$exp_obs
+    )
+  )
+  
+  return(out)
   
 }

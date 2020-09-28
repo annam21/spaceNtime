@@ -13,7 +13,7 @@ ste_build_eh(df, deploy, occ, ...)
 
 \item{occ}{tibble or dataframe specifying sampling occasions}
 
-\item{...}{optional arguments, including quite = T to suppress messages}
+\item{...}{optional arguments, including quiet = T to suppress time messages}
 }
 \value{
 a dataframe with new columns for space-to-event and censor

@@ -1,3 +1,13 @@
+#' Internal function to build gof bins at a single occasion
+#'
+#' @param censor right-censor cutoff
+#' @param lambda estimate of lambda
+#' @param n_bins number of bins to build
+#'
+#' @return returns a one row data frame
+#' @export
+#'
+#' @examples gof_bins_var_int(censor, lambda, n_bins)
 gof_bins_var_int <- function(censor, lambda, n_bins){
   # internal function to build bins at a single occasion
   

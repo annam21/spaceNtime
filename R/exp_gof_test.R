@@ -1,20 +1,17 @@
+
+#' Title Background function; single exponential goodness of fit test
+#'
+#' @param eh eh df
+#' @param n_bins number of bins to use in chi squared test
+#' @param lambda estiamte of lambda
+#' @param bin_cuts "fixed" or "variable"
+#'
+#' @return goodness of fit result
+#' @export
+#'
+#' @examples exp_gof_test(eh, n_bins, lambda, bin_cuts = "fixed")
 exp_gof_test <- function(eh, n_bins, lambda, bin_cuts = "fixed"){
   
-  assertthat::assert_that(is.data.frame(eh))
-  assertthat::assert_that(
-    assertr::verify(eh,
-      assertr::has_all_names("occ", "start", "end", "STE", "censor"), 
-      success_fun = success_logical, 
-      error_fun = error_logical), 
-    msg = "eh must be a dataframe with columns occ, start, end, STE and censor")
-  
-  assertthat::assert_that(
-    is.numeric(lambda), 
-    length(lambda) == 1, 
-    lambda > 0,
-    msg = "lambda must be a single numeric value greater than 0"
-  )
- 
   assertthat::assert_that(
     n_bins%%1 == 0,
     n_bins >= 2,
@@ -42,7 +39,7 @@ exp_gof_test <- function(eh, n_bins, lambda, bin_cuts = "fixed"){
     summarise(cut_mean = mean(left), .groups = "drop")
   
   chi_sq_data <- eh %>%
-    mutate(bin = unlist(map2(bin_data, eh$STE, assign_bins))) %>%
+    mutate(bin = unlist(purrr::map2(bin_data, eh$to_event, assign_bins))) %>%
     group_by(bin) %>%
     tally() %>%
     right_join(tmp1, by = "bin") %>%

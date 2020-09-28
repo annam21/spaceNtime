@@ -1,4 +1,14 @@
-pois_gof_test <- function(count, n_bins, lambda){
+#' Single iteration of the poisson goodness-of-fit test
+#'
+#' @param n_bins number of bins to use in chi-squared test
+#' @param count vector of observed counts
+#' @param lambda estimate of lambda
+#'
+#' @return returns the result of the goodness-of-fit test
+#' @export
+#'
+#' @examples pois_gof_test(n_bins, count, lambda)
+pois_gof_test <- function(n_bins, count, lambda){
   
   data <- tibble(
     occ = 1:length(count),
@@ -27,7 +37,7 @@ pois_gof_test <- function(count, n_bins, lambda){
     mutate(prob = replace(prob, bin == n_bins, 1-sum(prob[1:(n_bins - 1)]))) %>%
     select(bin, n_obs, prob)
   
-  tmp3 <- chisq.test(x = data_chsq$n_obs, p = data_chsq$prob, simulate.p.value = T)
+  tmp3 <- chisq.test(x = chi_sq_data$n_obs, p = chi_sq_data$prob, simulate.p.value = T)
   
   out <- list(
     summary = tibble(

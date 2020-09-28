@@ -1,3 +1,13 @@
+#' Define Chi squared bins of equal width
+#'
+#' @param eh encounter history object
+#' @param n_bins integer, the number of bins to create
+#' @param lambda estimate of density (lambda from poisson and exponential distributions)
+#'
+#' @return Data frame defining the bin intervals for each occasion
+#' @export
+#'
+#' @examples build_gof_bins_eq(eh, n_bins, lambda)
 build_gof_bins_eq <- function(eh, n_bins, lambda){
   # function to build bins for goodness of fit test with bin cutoffs the same
     # for every occasion
@@ -20,7 +30,7 @@ build_gof_bins_eq <- function(eh, n_bins, lambda){
     ), nrow(eh)
   ) %>%
     # set the max right cutoff for occasion[i] to the censor value[i] 
-    map2(.,
+    purrr::map2(.,
       as.list(eh$censor), 
       function(a,b){ 
         out <- a %>%
@@ -29,18 +39,18 @@ build_gof_bins_eq <- function(eh, n_bins, lambda){
       }
     ) %>%
     # assign probabilities to each bin, each occasion, given lambda
-    map(.,
+    purrr::map(.,
       mutate,
       prob = exp_dens(left, right, lambda)
     ) %>%
     # set neg probs to 0 (adjust for censor value moving between occasions)
-    map(
+    purrr::map(
       .,
       mutate,
       prob = replace(prob, prob < 0, 0)
     ) %>%
     # set final bin probability to 1 - sum of probabilities (i.e. the rest of the curve)
-    map(
+    purrr::map(
       .,
       mutate,
       prob = tidyr::replace_na(prob, replace = 1-sum(prob, na.rm = T))

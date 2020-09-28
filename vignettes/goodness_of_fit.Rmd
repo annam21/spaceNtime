@@ -1,0 +1,259 @@
+---
+title: "Goodness of fit tests -- spaceNtime"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{goodness_of_fit}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+author: "Kenneth Loonam"
+---
+
+```{r setup, include = FALSE}
+library(dplyr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette walks the user through running simple goodness of fit tests on their data for the space-to-event and time-to-event models described in ["Three novel methods to estimate abundance of unmarked animals using remote cameras" by Moeller et al. (2018)](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.2331). 
+
+## Load the package
+If you haven't already installed it, please see instructions at the bottom of Anna Moeller's [Github repository](https://github.com/annam21/spaceNtime). If you are new to the package, it would also help to read through the spaceNtime vignette before continuing with this vignette.
+```{r, message = F}
+library(spaceNtime)
+```
+
+## The models
+
+## The tests
+
+## Space-to-event
+
+```{r}
+df <- data.frame(
+  cam = c(1,1,2,2,2),
+  datetime = as.POSIXct(c("2016-01-02 12:00:00",
+                          "2016-01-03 13:12:00",
+                          "2016-01-02 12:00:00",
+                          "2016-01-02 14:00:00",
+                          "2016-01-03 16:53:42"),
+                        tz = "GMT"),
+  count = c(1, 0, 0, 1, 2)
+)
+
+deploy <- data.frame(
+  cam = c(1, 2, 2, 2),
+  start = as.POSIXct(c("2015-12-01 15:00:00",
+                       "2015-12-08 00:00:00", 
+                       "2016-01-01 00:00:00", 
+                       "2016-01-02 00:00:00"),
+                     tz = "GMT"),
+  end = as.POSIXct(c("2016-01-05 00:00:00", 
+                     "2015-12-19 03:30:00", 
+                     "2016-01-01 05:00:00",
+                     "2016-01-05 00:00:00"), 
+                   tz = "GMT"),
+  area = c(300, 200, 200, 450)
+)
+
+study_dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
+
+occ <- build_occ(samp_freq = 3600, # seconds between the start of each sampling occasion
+                 samp_length = 10, # duration of each sampling occasion (seconds)
+                 study_start = study_dates[1],
+                 study_end = study_dates[2])
+
+eh <- ste_build_eh(df, deploy, occ)
+```
+
+## Time-to-event
+
+
+## The data
+
+The functions for all three methods require two pieces of information.
+
+### Photo information
+
+The first, called df, is a data.frame or tibble that contains all your pictures from the study period. This must contain, at a minimum, these three columns (names and classes must match exactly): 
+
+- cam: The unique ID of the sampling site (any class)
+
+- datetime: The date and time of the photo (class POSIXct)
+
+- count: The count of your study species at each date and time. For STE and TTE, this can be simply species presence or absence (0 or 1) (class numeric)
+
+```{r}
+df <- data.frame(
+  cam = c(1,1,2,2,2),
+  datetime = as.POSIXct(c("2016-01-02 12:00:00",
+                          "2016-01-03 13:12:00",
+                          "2016-01-02 12:00:00",
+                          "2016-01-02 14:00:00",
+                          "2016-01-03 16:53:42"),
+                        tz = "GMT"),
+  count = c(1, 0, 0, 1, 2)
+)
+```
+`r knitr::kable(df, caption = "df")`
+
+### Camera deployment information
+
+
+The user must also provide a database called deploy. This is a dataframe or tibble that contains information about the active periods for each active camera and their areas. **Please note,** to get accurate estimates, this should include all cameras that were functioning, not just the ones that got pictures of your target species. 
+
+#### Version 1. 
+
+```{r}
+deploy <- data.frame(
+  cam = c(1, 2, 2, 2),
+  start = as.POSIXct(c("2015-12-01 15:00:00",
+                       "2015-12-08 00:00:00", 
+                       "2016-01-01 00:00:00", 
+                       "2016-01-02 00:00:00"),
+                     tz = "GMT"),
+  end = as.POSIXct(c("2016-01-05 00:00:00", 
+                     "2015-12-19 03:30:00", 
+                     "2016-01-01 05:00:00",
+                     "2016-01-05 00:00:00"), 
+                   tz = "GMT"),
+  area = c(300, 200, 200, 450)
+)
+```
+`r knitr::kable(deploy, caption = "deploy version 1: functioning periods")`
+
+This version can be used for either motion-sensor or timelapse photos. Each row represents a period of **continuous functionality** for a camera. If a camera ever went offline then came back on, it should have multiple rows. For cameras with multiple entries, the time periods should never overlap. Whenever the camera's area changes, it should be entered as a new row. Setting area = 0 is equivalent to the camera not functioning. If a camera has any missing periods, it will be assumed that the camera was not working during that time.  
+
+#### Version 2: Timelapse only
+Users with timelapse data have the option of creating deploy directly from df. This is the suggested form for timelapse photos because any missing photos are interpreted as camera malfunctions rather than counts of 0 animals. Furthermore, this allows the most flexibility for users with occasion-by-occasion information about the camera's area and functionality collected collected while analyzing the photos. For example, a photo with the lens covered in snow could be coded as area = 0. 
+
+```{r, echo = F}
+df1 <- data.frame(
+  cam = c(1,1,2,2,2),
+  datetime = as.POSIXct(c("2016-01-02 12:00:00",
+                      "2016-01-02 14:00:00",
+                      "2016-01-02 12:00:00",
+                      "2016-01-02 14:00:00",
+                      "2016-01-03 16:00:00"),
+                    tz = "GMT"),
+  count = c(0, 1, 0, 0, 2),
+  area = c(300, 300, 200, 0, 450)
+)
+deploy1 <- df1 %>%
+  mutate(start = datetime, 
+         end = start) %>%
+  select(cam, start, end, area)
+```
+`r knitr::kable(deploy1, caption = "deploy version 2: occasion-by-occasion")`
+
+This version of deploy should contain *every* functional photo (i.e., not obstructed or malfunctioning) taken during the study period. It will have the following columns, at a minimum:
+
+- cam: The unique ID of the sampling site (same class as df$cam)
+
+- start: The date and time of the photo (same class and tz as df$datetime)
+
+- end: The date and time of the photo (same class and tz as df$datetime)
+
+- area: the camera's visible area, in any units (class numeric)
+
+The area should be 0 on any occasion that the camera was obstructed or malfunctioning. 
+
+## Space-to-Event
+### Specify occasions
+
+The first step after defining df and deploy is to specify the sampling occasions. This can be done manually or with the function build_occ(). The sampling occasions should be in a data.frame or tibble with the following structure:
+```{r}
+study_dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
+occ <- build_occ(samp_freq = 3600, # seconds between the start of each sampling occasion
+                 samp_length = 10, # duration of each sampling occasion (seconds)
+                 study_start = study_dates[1],
+                 study_end = study_dates[2])
+```
+`r knitr::kable(head(occ), caption = "example structure of occ")`
+
+### Build your encounter history
+
+With one simple step, you can build your space-to-event encounter history. There will be an NA on every occasion where no animals were detected. The model will treat these NAs as right-censors. 
+
+```{r}
+ste_eh <- ste_build_eh(df, deploy, occ)
+ste_eh
+```
+
+### Estimate abundance
+
+To estimate abundance from STE, use the function ste_estN_fn. 
+Be sure to specify your study_area size in the same units as your camera visible areas. 
+
+```{r}
+ste_estN_fn(ste_eh, study_area = 1e6)
+```
+
+
+
+
+## Time-to-Event
+Time-to-event uses the same df and deploy as specified in STE. 
+
+### Specify occasions
+
+As with STE, the first step is to specify the sampling occasions. This can be done manually or with the function build_occ(). The sampling occasions should be in a data.frame or tibble with the following structure:
+```{r}
+study_dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
+occ <- build_occ(samp_freq = 3600 * 10,
+                 samp_length = 3600 * 8,
+                 study_start = study_dates[1],
+                 study_end = study_dates[2])
+```
+`r knitr::kable(head(occ), caption = "example structure of occ")`
+
+The second piece is to define the length of your sampling period. This is equal to the mean amount of time (in seconds) that it takes for an animal to cross the average viewshed of a camera. This can be calculated in different ways. A crude method for estimating sampling period exists with the function tte_samp_per. An example, based on an animal speed of 30m/hr is: 
+
+```{r}
+per <- tte_samp_per(deploy, lps = 30/3600)
+```
+
+### Build your encounter history
+```{r}
+tte_eh <- tte_build_eh(df, deploy, occ,  per) 
+head(tte_eh)
+```
+
+### Estimate abundance 
+```{r}
+tte_estN_fn(
+  tte_eh,
+  study_area = 1e6
+)
+```
+
+
+
+## Instantaneous Sampling
+### Specify occasions
+
+As with STE, the first step is to specify the sampling occasions. This can be done manually or with the function build_occ(). The sampling occasions should be in a data.frame or tibble with the following structure:
+```{r}
+study_dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
+occ <- build_occ(samp_freq = 3600,
+                 samp_length = 10,
+                 study_start = study_dates[1],
+                 study_end = study_dates[2])
+```
+`r knitr::kable(head(occ), caption = "example structure of occ")`
+
+### Build your encounter history
+
+```{r}
+ise_eh <- ise_build_eh(df, deploy, occ) 
+head(ise_eh)
+```
+
+### Estimate abundance 
+```{r}
+ise_estN_fn(
+  ise_eh,
+  study_area = 1e6
+)
+```

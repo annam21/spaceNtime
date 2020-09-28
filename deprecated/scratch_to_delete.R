@@ -3,7 +3,7 @@
 # July 2020
 
 #STE_EXP_Workflow===============================================================
-require(spaceNtime); require(dplyr); require(purrr)
+# require(spaceNtime); require(dplyr); require(purrr)
 
 df <- data.frame(
   cam = c(1,1,2,2,2),
@@ -42,16 +42,26 @@ eh <- ste_build_eh(df, deploy, occ)
 n_bins <- c(2,3,5)
 lambda <- 0.001
 bin_cuts <- "fixed"
-source("R\\build_gof_bins_eq.R"); source("R\\build_gof_bins_var.R")
-source("R\\gof_bins_var_int.R"); source("R\\exponential_density.R")
-source("R\\assign_bins.R"); source("R//exp_gof_test.R")
 
-#STE_EXP_Workflow===============================================================
-require(spaceNtime); require(dplyr); require(purrr); require(assertthat)
+exp_gof_STE(eh, n_bins, lambda)
 
-count <- rpois(100,.5)
-n_bins <- c(2,3,5)
-lambda <- 0.01
-source("R\\pois_density.R"); source("R\\pois_gof_test.R")
+#STE_pois_workflow==============================================================
 
-pois_gof_test(count, n_bins, lambda)
+pois_gof_STE(n_bins, lambda, df, deploy, occ)
+
+
+#TTE_Workflow===================================================================
+
+study_dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
+occ <- build_occ(samp_freq = 3600 * 10,
+                 samp_length = 3600 * 8,
+                 study_start = study_dates[1],
+                 study_end = study_dates[2])
+
+per <- tte_samp_per(deploy, lps = 30/3600)
+
+tte_eh <- tte_build_eh(df, deploy, occ,  per)
+eh <- tte_eh
+
+exp_gof_TTE(eh, n_bins, lambda)
+pois_gof_TTE(n_bins, lambda, eh)

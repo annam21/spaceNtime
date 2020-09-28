@@ -4,7 +4,7 @@
 \alias{tte_build_eh}
 \title{Build TTE encounter history}
 \usage{
-tte_build_eh(df, deploy, occ, samp_per)
+tte_build_eh(df, deploy, occ, samp_per, ...)
 }
 \arguments{
 \item{df}{df object}
@@ -12,6 +12,10 @@ tte_build_eh(df, deploy, occ, samp_per)
 \item{deploy}{deploy object}
 
 \item{occ}{tibble or dataframe specifying sampling occasions}
+
+\item{samp_per}{}
+
+\item{...}{optional arguments, including quiet = T to suppress time messages}
 }
 \value{
 a dataframe with new columns for time-to-event and censor
