@@ -10,7 +10,7 @@
 #' @export
 #'
 #' @examples exp_gof_STE(eh, n_bins, lambda = NULL, bin_cuts = "fixed")
-exp_gof_STE <- function(eh, n_bins, lambda = NULL, bin_cuts = "fixed"){
+exp_gof_ste <- function(n_bins, lambda = NULL, eh, bin_cuts = "fixed"){
   
   # Don't think I'm going to use this here. It was originally going to be an option
   # to allow the user to specify either lambda or the data necessary to estimate 

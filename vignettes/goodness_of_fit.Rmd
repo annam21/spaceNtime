@@ -20,15 +20,18 @@ This vignette walks the user through running simple goodness of fit tests on the
 
 ## Load the package
 If you haven't already installed it, please see instructions at the bottom of Anna Moeller's [Github repository](https://github.com/annam21/spaceNtime). If you are new to the package, it would also help to read through the spaceNtime vignette before continuing with this vignette.
+
 ```{r, message = F}
 library(spaceNtime)
 ```
 
-## The models
+## Models and Tests
 
-## The tests
+This package contains two goodness-of-fit tests (Poisson and exponential tests) for two of the models in the package (the space-to-event and time-to-event models). In short, the goodness-of-fit tests ask "does the observed data match the estimated parameter". In this case, the estimated parameter is lambda, a measure of density derived from the output of the estN functions. For the Poisson test, the observed data is the count of animals at each camera during each occasion, and for the exponential test the observed data is the time or space sampled before an event occurs during each occasion. To get both of those pieces of information, we need to follow the flow of the package presented in the spaceNtime vignette. We reproduce it here with minimal comments. For details, please refer back to the other vignette.
 
 ## Space-to-event
+
+First we need to build our data:
 
 ```{r}
 df <- data.frame(
@@ -67,193 +70,73 @@ occ <- build_occ(samp_freq = 3600, # seconds between the start of each sampling 
 eh <- ste_build_eh(df, deploy, occ)
 ```
 
+Once we've built the data the package needs, we can run the estimate and extract lambda from the output:
+
+```{r}
+
+study_area <- 1E6
+results <- ste_estN_fn(eh, study_area)
+lambda <- results$N / study_area
+```
+
+Lambda will be a small number. It's the measure of density in square meters (assuming you used square meters to define your viewsheds and study_area). Once we have lambda, we can supply the data (observed values) and lambda (used to calculate the expected values). 
+
+```{r}
+exp_gof_ste(
+  n_bins = c(2,3),
+  lambda = lambda,
+  eh = eh,
+  bin_cuts = "variable"
+)
+```
+
+I'm sure you noticed in that last chunk of code there were four arguments, not just a data argument and lambda. That's because life is complicated and statistics is worse. The first extra argument is n_bins; it defines how many bins to split the data into. It also defines how many goodness-of-fit tests to run. Basically, it just needs to be a vector of integers greater than 1 (if you have one bin all the counts fall into that bin and you expect all of the counts to fall into that bin). Since goodness-of-fit tests can be sensitive to the number of bins used in the chi-squared test, we let you pass as many arguments for n_bins as you feel like. 
+
+The next extra argument is bin_cuts = "variable". The only other option for this argument is bin_cuts = "fixed". Because the cutoff for right censoring observations of STE changes as cameras enter and exit the study, there are multiple options for defining the width of the bins used in the chi-squared test. The cut points between bins can be "fixed", meaning they are the same for every occasion regardless of how many cameras are active. For occasions with few cameras active, higher bins will be truncated as the right censor value moves into the bin. In an extreme case, the bin width might be zero, observed counts will be zeo, and expected counts will be zero. That doesn't provide any information about fit. The other option is to allow the cut points to vary between occasions. In that scenario, bins are defined by the censor point during the occasion and kept of equal width within the occasion.
+
+The results come in two sections. The first is a summary table of all of the tests run. n_bins and lambda return the argument used, X_squared is the chi squared statistic, and p is the p value from the chisq.test function that runs in the backgroun. Next is a list of tables reporting details from the chisq.test function for each n_bins scenario.
+
+Now that we've talked through the complications, the Poisson test schould look simpler:
+
+```{r}
+pois_gof_ste(
+  n_bins = c(2,3),
+  lambda = lambda,
+  df = df,
+  deploy = deploy,
+  occ = occ
+)
+```
+
+There are a few differences worth noting here. First, passing the data requires df, deploy, and occ instead of just the encounter history. Second, you don't need to specify how to define the bins; the bins are integer counts, not continuous. Finally, keep in mind that specifying too many bins will mean you have many bins with 0 counts observed. If, for example, the highest count you see on camera is 3, specifying five bins will result in bins defined as 0,1,2,3, and 4+ animals; obviously the 4+ bin will be empty.
+
 ## Time-to-event
 
+The time-to-event goodness-of-fit tests follow a very similar pattern to the space-to-event tests. First, lets prep the data:
 
-## The data
-
-The functions for all three methods require two pieces of information.
-
-### Photo information
-
-The first, called df, is a data.frame or tibble that contains all your pictures from the study period. This must contain, at a minimum, these three columns (names and classes must match exactly): 
-
-- cam: The unique ID of the sampling site (any class)
-
-- datetime: The date and time of the photo (class POSIXct)
-
-- count: The count of your study species at each date and time. For STE and TTE, this can be simply species presence or absence (0 or 1) (class numeric)
-
-```{r}
-df <- data.frame(
-  cam = c(1,1,2,2,2),
-  datetime = as.POSIXct(c("2016-01-02 12:00:00",
-                          "2016-01-03 13:12:00",
-                          "2016-01-02 12:00:00",
-                          "2016-01-02 14:00:00",
-                          "2016-01-03 16:53:42"),
-                        tz = "GMT"),
-  count = c(1, 0, 0, 1, 2)
-)
-```
-`r knitr::kable(df, caption = "df")`
-
-### Camera deployment information
-
-
-The user must also provide a database called deploy. This is a dataframe or tibble that contains information about the active periods for each active camera and their areas. **Please note,** to get accurate estimates, this should include all cameras that were functioning, not just the ones that got pictures of your target species. 
-
-#### Version 1. 
-
-```{r}
-deploy <- data.frame(
-  cam = c(1, 2, 2, 2),
-  start = as.POSIXct(c("2015-12-01 15:00:00",
-                       "2015-12-08 00:00:00", 
-                       "2016-01-01 00:00:00", 
-                       "2016-01-02 00:00:00"),
-                     tz = "GMT"),
-  end = as.POSIXct(c("2016-01-05 00:00:00", 
-                     "2015-12-19 03:30:00", 
-                     "2016-01-01 05:00:00",
-                     "2016-01-05 00:00:00"), 
-                   tz = "GMT"),
-  area = c(300, 200, 200, 450)
-)
-```
-`r knitr::kable(deploy, caption = "deploy version 1: functioning periods")`
-
-This version can be used for either motion-sensor or timelapse photos. Each row represents a period of **continuous functionality** for a camera. If a camera ever went offline then came back on, it should have multiple rows. For cameras with multiple entries, the time periods should never overlap. Whenever the camera's area changes, it should be entered as a new row. Setting area = 0 is equivalent to the camera not functioning. If a camera has any missing periods, it will be assumed that the camera was not working during that time.  
-
-#### Version 2: Timelapse only
-Users with timelapse data have the option of creating deploy directly from df. This is the suggested form for timelapse photos because any missing photos are interpreted as camera malfunctions rather than counts of 0 animals. Furthermore, this allows the most flexibility for users with occasion-by-occasion information about the camera's area and functionality collected collected while analyzing the photos. For example, a photo with the lens covered in snow could be coded as area = 0. 
-
-```{r, echo = F}
-df1 <- data.frame(
-  cam = c(1,1,2,2,2),
-  datetime = as.POSIXct(c("2016-01-02 12:00:00",
-                      "2016-01-02 14:00:00",
-                      "2016-01-02 12:00:00",
-                      "2016-01-02 14:00:00",
-                      "2016-01-03 16:00:00"),
-                    tz = "GMT"),
-  count = c(0, 1, 0, 0, 2),
-  area = c(300, 300, 200, 0, 450)
-)
-deploy1 <- df1 %>%
-  mutate(start = datetime, 
-         end = start) %>%
-  select(cam, start, end, area)
-```
-`r knitr::kable(deploy1, caption = "deploy version 2: occasion-by-occasion")`
-
-This version of deploy should contain *every* functional photo (i.e., not obstructed or malfunctioning) taken during the study period. It will have the following columns, at a minimum:
-
-- cam: The unique ID of the sampling site (same class as df$cam)
-
-- start: The date and time of the photo (same class and tz as df$datetime)
-
-- end: The date and time of the photo (same class and tz as df$datetime)
-
-- area: the camera's visible area, in any units (class numeric)
-
-The area should be 0 on any occasion that the camera was obstructed or malfunctioning. 
-
-## Space-to-Event
-### Specify occasions
-
-The first step after defining df and deploy is to specify the sampling occasions. This can be done manually or with the function build_occ(). The sampling occasions should be in a data.frame or tibble with the following structure:
-```{r}
-study_dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
-occ <- build_occ(samp_freq = 3600, # seconds between the start of each sampling occasion
-                 samp_length = 10, # duration of each sampling occasion (seconds)
-                 study_start = study_dates[1],
-                 study_end = study_dates[2])
-```
-`r knitr::kable(head(occ), caption = "example structure of occ")`
-
-### Build your encounter history
-
-With one simple step, you can build your space-to-event encounter history. There will be an NA on every occasion where no animals were detected. The model will treat these NAs as right-censors. 
-
-```{r}
-ste_eh <- ste_build_eh(df, deploy, occ)
-ste_eh
-```
-
-### Estimate abundance
-
-To estimate abundance from STE, use the function ste_estN_fn. 
-Be sure to specify your study_area size in the same units as your camera visible areas. 
-
-```{r}
-ste_estN_fn(ste_eh, study_area = 1e6)
-```
-
-
-
-
-## Time-to-Event
-Time-to-event uses the same df and deploy as specified in STE. 
-
-### Specify occasions
-
-As with STE, the first step is to specify the sampling occasions. This can be done manually or with the function build_occ(). The sampling occasions should be in a data.frame or tibble with the following structure:
 ```{r}
 study_dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
 occ <- build_occ(samp_freq = 3600 * 10,
                  samp_length = 3600 * 8,
                  study_start = study_dates[1],
                  study_end = study_dates[2])
-```
-`r knitr::kable(head(occ), caption = "example structure of occ")`
 
-The second piece is to define the length of your sampling period. This is equal to the mean amount of time (in seconds) that it takes for an animal to cross the average viewshed of a camera. This can be calculated in different ways. A crude method for estimating sampling period exists with the function tte_samp_per. An example, based on an animal speed of 30m/hr is: 
-
-```{r}
 per <- tte_samp_per(deploy, lps = 30/3600)
+
+eh <- tte_build_eh(df, deploy, occ,  per)
+
 ```
 
-### Build your encounter history
-```{r}
-tte_eh <- tte_build_eh(df, deploy, occ,  per) 
-head(tte_eh)
-```
-
-### Estimate abundance 
-```{r}
-tte_estN_fn(
-  tte_eh,
-  study_area = 1e6
-)
-```
-
-
-
-## Instantaneous Sampling
-### Specify occasions
-
-As with STE, the first step is to specify the sampling occasions. This can be done manually or with the function build_occ(). The sampling occasions should be in a data.frame or tibble with the following structure:
-```{r}
-study_dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
-occ <- build_occ(samp_freq = 3600,
-                 samp_length = 10,
-                 study_start = study_dates[1],
-                 study_end = study_dates[2])
-```
-`r knitr::kable(head(occ), caption = "example structure of occ")`
-
-### Build your encounter history
+Next, run the exponential goodness-of-fit test:
 
 ```{r}
-ise_eh <- ise_build_eh(df, deploy, occ) 
-head(ise_eh)
+exp_gof_tte(n_bins = c(2,3), lambda, eh) 
 ```
 
-### Estimate abundance 
+And the Poisson goodness-of-fit test:
+
 ```{r}
-ise_estN_fn(
-  ise_eh,
-  study_area = 1e6
-)
+pois_gof_tte(n_bins = c(2,3), lambda, eh)
 ```
+
+This section of the package is still under development, but we will do our best to not break the workflow presented here. We will mostly be adding defensive programming, useful error messages, and, potentially, new features. Best of luck with your abundance estimates!

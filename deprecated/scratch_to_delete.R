@@ -43,11 +43,11 @@ n_bins <- c(2,3,5)
 lambda <- 0.001
 bin_cuts <- "fixed"
 
-exp_gof_STE(eh, n_bins, lambda)
+exp_gof_ste(eh, n_bins, lambda)
 
 #STE_pois_workflow==============================================================
 
-pois_gof_STE(n_bins, lambda, df, deploy, occ)
+pois_gof_ste(n_bins, lambda, df, deploy, occ)
 
 
 #TTE_Workflow===================================================================
@@ -63,5 +63,5 @@ per <- tte_samp_per(deploy, lps = 30/3600)
 tte_eh <- tte_build_eh(df, deploy, occ,  per)
 eh <- tte_eh
 
-exp_gof_TTE(eh, n_bins, lambda)
-pois_gof_TTE(n_bins, lambda, eh)
+exp_gof_tte(eh, n_bins, lambda)
+pois_gof_tte(n_bins, lambda, eh)

@@ -9,7 +9,7 @@
 #' @export
 #'
 #' @examples exp_gof_TTE(eh, n_bins, lambda, bin_cuts = "fixed")
-exp_gof_TTE <- function(eh, n_bins, lambda, bin_cuts = "fixed"){
+exp_gof_tte <- function(n_bins, lambda, eh, bin_cuts = "fixed"){
   
   
   eh <- eh %>%

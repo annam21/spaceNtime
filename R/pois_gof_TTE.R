@@ -8,7 +8,7 @@
 #' @export
 #'
 #' @examples pois_gof_TTE(n_bins, lambda, eh)
-pois_gof_TTE <- function(n_bins, lambda, eh){
+pois_gof_tte <- function(n_bins, lambda, eh){
   
   tmp <- purrr::map(n_bins, pois_gof_test, count = eh$count, lambda = lambda)
   

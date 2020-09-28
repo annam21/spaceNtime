@@ -10,7 +10,7 @@
 #' @export
 #'
 #' @examples pois_gof_STE(n_bins, lambda, df, deploy, occ)
-pois_gof_STE <- function(n_bins, lambda, df, deploy, occ){
+pois_gof_ste <- function(n_bins, lambda, df, deploy, occ){
   
   #ste_calc_toevent line 67
   effort <- effort_fn(deploy, occ)
