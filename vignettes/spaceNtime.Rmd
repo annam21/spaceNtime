@@ -177,10 +177,7 @@ head(tte_eh)
 
 ### Estimate abundance 
 ```{r}
-tte_estN_fn(
-  tte_eh,
-  study_area = 1e6
-)
+tte_estN_fn(tte_eh, study_area = 1e6)
 ```
 
 
