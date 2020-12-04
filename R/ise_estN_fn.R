@@ -13,7 +13,12 @@ ise_estN_fn <- function(ise_eh, study_area){
 
   # First, get rid of occasions where area = 0
   ise_eh2 <- ise_eh %>%
-    filter(area != 0)
+    filter(area != 0) %>% 
+    # Take first picture in occasion
+    group_by(occ, cam) %>% 
+    summarize(count = first(count),
+              area = first(area)) %>% 
+    ungroup
   
   Jai_ni <- ise_eh2 %>%
     group_by(cam) %>%
