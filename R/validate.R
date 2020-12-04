@@ -57,14 +57,27 @@ validate_deploy <- function(deploy){
     # Check start and end
     validate_start_end(.)
   
-  # Make sure rows non-overlapping
-  ov <- find_overlap(deploy)  
-  if(nrow(ov) != 0){
-    print(ov)
-    stop("There are overlapping time intervals in deploy")
-  } else{
-    return(deploy)
+  # See if start to end are length 0 (It's a timelapse effort)
+  tl <- deploy %>% 
+    filter(start != end ) 
+  if(nrow(tl) == 0){
+    # It's timelapse, so make sure there is only 1 effort for each time 
+    deploy <- deploy %>% 
+      distinct() # Force it for the user 
+    deploy %>% 
+      group_by(cam, start, end) %>% 
+      count() %>% 
+      filter(n != 1) %>% 
+      assertr::verify(nrow(.) == 0)
+  } else {
+    # Make sure rows non-overlapping
+    ov <- find_overlap(deploy)  
+    if(nrow(ov) != 0){
+      print(ov)
+      stop("There are overlapping time intervals in deploy")
+    } 
   }
+  return(deploy)
 }
 
 #' Validate df and deploy together
