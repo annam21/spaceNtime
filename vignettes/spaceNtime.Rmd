@@ -179,6 +179,7 @@ occ <- tte_build_occ(
 ```{r}
 tte_eh <- tte_build_eh(df, deploy, occ,  per) 
 head(tte_eh)
+head(as.data.frame(tte_eh))
 ```
 
 ### Estimate abundance 
