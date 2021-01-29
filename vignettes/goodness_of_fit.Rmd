@@ -1,0 +1,142 @@
+---
+title: "Goodness of fit tests -- spaceNtime"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{goodness_of_fit}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+author: "Kenneth Loonam"
+---
+
+```{r setup, include = FALSE}
+library(dplyr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette walks the user through running simple goodness of fit tests on their data for the space-to-event and time-to-event models described in ["Three novel methods to estimate abundance of unmarked animals using remote cameras" by Moeller et al. (2018)](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.2331). 
+
+## Load the package
+If you haven't already installed it, please see instructions at the bottom of Anna Moeller's [Github repository](https://github.com/annam21/spaceNtime). If you are new to the package, it would also help to read through the spaceNtime vignette before continuing with this vignette.
+
+```{r, message = F}
+library(spaceNtime)
+```
+
+## Models and Tests
+
+This package contains two goodness-of-fit tests (Poisson and exponential tests) for two of the models in the package (the space-to-event and time-to-event models). In short, the goodness-of-fit tests ask "does the observed data match the estimated parameter". In this case, the estimated parameter is lambda, a measure of density derived from the output of the estN functions. For the Poisson test, the observed data is the count of animals at each camera during each occasion, and for the exponential test the observed data is the time or space sampled before an event occurs during each occasion. To get both of those pieces of information, we need to follow the flow of the package presented in the spaceNtime vignette. We reproduce it here with minimal comments. For details, please refer back to the other vignette.
+
+## Space-to-event
+
+First we need to build our data:
+
+```{r}
+df <- data.frame(
+  cam = c(1,1,2,2,2),
+  datetime = as.POSIXct(c("2016-01-02 12:00:00",
+                          "2016-01-03 13:12:00",
+                          "2016-01-02 12:00:00",
+                          "2016-01-02 14:00:00",
+                          "2016-01-03 16:53:42"),
+                        tz = "GMT"),
+  count = c(1, 0, 0, 1, 2)
+)
+
+deploy <- data.frame(
+  cam = c(1, 2, 2, 2),
+  start = as.POSIXct(c("2015-12-01 15:00:00",
+                       "2015-12-08 00:00:00", 
+                       "2016-01-01 00:00:00", 
+                       "2016-01-02 00:00:00"),
+                     tz = "GMT"),
+  end = as.POSIXct(c("2016-01-05 00:00:00", 
+                     "2015-12-19 03:30:00", 
+                     "2016-01-01 05:00:00",
+                     "2016-01-05 00:00:00"), 
+                   tz = "GMT"),
+  area = c(300, 200, 200, 450)
+)
+
+study_dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
+
+occ <- build_occ(samp_freq = 3600, # seconds between the start of each sampling occasion
+                 samp_length = 10, # duration of each sampling occasion (seconds)
+                 study_start = study_dates[1],
+                 study_end = study_dates[2])
+
+eh <- ste_build_eh(df, deploy, occ)
+```
+
+Once we've built the data the package needs, we can run the estimate and extract lambda from the output:
+
+```{r}
+
+study_area <- 1E6
+results <- ste_estN_fn(eh, study_area)
+lambda <- results$N / study_area
+```
+
+Lambda will be a small number. It's the measure of density in square meters (assuming you used square meters to define your viewsheds and study_area). Once we have lambda, we can supply the data (observed values) and lambda (used to calculate the expected values). 
+
+```{r}
+exp_gof_ste(
+  n_bins = c(2,3),
+  lambda = lambda,
+  eh = eh,
+  bin_cuts = "variable"
+)
+```
+
+I'm sure you noticed in that last chunk of code there were four arguments, not just a data argument and lambda. That's because life is complicated and statistics is worse. The first extra argument is n_bins; it defines how many bins to split the data into. It also defines how many goodness-of-fit tests to run. Basically, it just needs to be a vector of integers greater than 1 (if you have one bin all the counts fall into that bin and you expect all of the counts to fall into that bin). Since goodness-of-fit tests can be sensitive to the number of bins used in the chi-squared test, we let you pass as many arguments for n_bins as you feel like. 
+
+The next extra argument is bin_cuts = "variable". The only other option for this argument is bin_cuts = "fixed". Because the cutoff for right censoring observations of STE changes as cameras enter and exit the study, there are multiple options for defining the width of the bins used in the chi-squared test. The cut points between bins can be "fixed", meaning they are the same for every occasion regardless of how many cameras are active. For occasions with few cameras active, higher bins will be truncated as the right censor value moves into the bin. In an extreme case, the bin width might be zero, observed counts will be zeo, and expected counts will be zero. That doesn't provide any information about fit. The other option is to allow the cut points to vary between occasions. In that scenario, bins are defined by the censor point during the occasion and kept of equal width within the occasion.
+
+The results come in two sections. The first is a summary table of all of the tests run. n_bins and lambda return the argument used, X_squared is the chi squared statistic, and p is the p value from the chisq.test function that runs in the backgroun. Next is a list of tables reporting details from the chisq.test function for each n_bins scenario.
+
+Now that we've talked through the complications, the Poisson test schould look simpler:
+
+```{r}
+pois_gof_ste(
+  n_bins = c(2,3),
+  lambda = lambda,
+  df = df,
+  deploy = deploy,
+  occ = occ
+)
+```
+
+There are a few differences worth noting here. First, passing the data requires df, deploy, and occ instead of just the encounter history. Second, you don't need to specify how to define the bins; the bins are integer counts, not continuous. Finally, keep in mind that specifying too many bins will mean you have many bins with 0 counts observed. If, for example, the highest count you see on camera is 3, specifying five bins will result in bins defined as 0,1,2,3, and 4+ animals; obviously the 4+ bin will be empty.
+
+## Time-to-event
+
+The time-to-event goodness-of-fit tests follow a very similar pattern to the space-to-event tests. First, lets prep the data:
+
+```{r}
+study_dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
+occ <- build_occ(samp_freq = 3600 * 10,
+                 samp_length = 3600 * 8,
+                 study_start = study_dates[1],
+                 study_end = study_dates[2])
+
+per <- tte_samp_per(deploy, lps = 30/3600)
+
+eh <- tte_build_eh(df, deploy, occ,  per)
+
+```
+
+Next, run the exponential goodness-of-fit test:
+
+```{r}
+exp_gof_tte(n_bins = c(2,3), lambda, eh) 
+```
+
+And the Poisson goodness-of-fit test:
+
+```{r}
+pois_gof_tte(n_bins = c(2,3), lambda, eh)
+```
+
+This section of the package is still under development, but we will do our best to not break the workflow presented here. We will mostly be adding defensive programming, useful error messages, and, potentially, new features. Best of luck with your abundance estimates!
