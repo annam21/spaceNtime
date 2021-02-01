@@ -4,11 +4,11 @@
 \name{spaceNtime}
 \alias{spaceNtime}
 \alias{spaceNtime-package}
-\title{spaceNtime: Estimate abundance of unmarked animals from 
+\title{spaceNtime: Estimate abundance of unmarked animals from
 camera trap photos.}
 \description{
-The package provides functions for manipulating data and running the three 
-models developed by 
+The package provides functions for manipulating data and running the three
+models developed by
 \href{https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.2331}{Moeller et al. 2018}.
 }
 \references{
@@ -17,10 +17,16 @@ to estimate abundance of unmarked animals using remote cameras. Ecosphere 9(8):
 e02331. \href{https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.2331}{10.1002/ecs2.2331}
 }
 \seealso{
-Check out the vignette \code{browseVignettes("spaceNtime")} to see a 
-workflow for using this package.
+Check out the vignettes in \code{browseVignettes("spaceNtime")} to see a
+workflow for using this package and running goodness of fit.
 }
 \author{
-Anna Moeller
+\strong{Maintainer}: Anna Moeller \href{https://orcid.org/0000-0001-9102-6959}{(ORCID)}
+
+Authors:
+\itemize{
+\item Anna Moeller
+\item Kenneth Loonam
+}
 }
 \keyword{internal}
