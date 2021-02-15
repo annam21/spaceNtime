@@ -32,12 +32,13 @@
 #'                    tz = "GMT"),
 #'   area = c(300, 200, 200, 450)
 #' )
+#'study_dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
 #'occ <- build_occ(samp_freq = 3600, 
 #'             samp_length = 10,
 #'             study_start = study_dates[1],
 #'             study_end = study_dates[2])
-#' ste_build_eh(df, deploy, occ)
-#' ste_estN_fn(dat.ste, study_area = 1e6)
+#' dat_ste <- ste_build_eh(df, deploy, occ)
+#' ste_estN_fn(dat_ste, study_area = 1e6)
 ste_estN_fn <- function(eh, study_area){
   
   dat <- list(toevent = matrix(eh$STE, nrow = 1),
@@ -60,7 +61,10 @@ ste_estN_fn <- function(eh, study_area){
   # Delta method for variance
   varB <- -1 * MASS::ginv(opt$hessian)
   form <- sprintf("~ %f * exp(x1)", study_area)
-  SE_N <- msm::deltamethod(g = stats::as.formula(form), mean = opt$par, cov = varB, ses = T)
+  SE_N <- msm::deltamethod(g = stats::as.formula(form), 
+                           mean = opt$par, 
+                           cov = varB, 
+                           ses = T)
   
   CI <- logCI(estN, SE_N)
   out <- data.frame(
