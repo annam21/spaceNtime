@@ -1,0 +1,49 @@
+---
+title: "Power-Analysis"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Power-Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Workflow for running a simulation-based power analysis for STE, TTE, and IS
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(spaceNtime)
+```
+
+# STE power analysis 
+
+The precision in STE is driven by a combination of number of cameras, number of occasions, and animal density. 
+
+To simulate STE under different scenarios, use the function `ste_pwr_sim()`.
+
+```{r}
+rslt <- ste_pwr_sim(
+  N = c(1, 2),
+  study_area = c(1e6),
+  ncam = c(30, 50),
+  nocc = c(1000, 2000),
+  cam_area = 100,
+  niter = 5
+)
+rslt
+```
+
+To visualize the results, you can plot the iterations with 
+```{r}
+plot_pwr_sim(rslt)
+```
+
+You can also visualize the coefficient of variation with 
+```{r}
+plot_pwr_cv(rslt)
+```
