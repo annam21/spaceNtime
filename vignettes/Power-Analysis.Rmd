@@ -39,12 +39,12 @@ rslt
 ```
 
 To visualize the results, you can plot the iterations with 
-```{r}
+```{r, fig.width = 8}
 plot_pwr_sim(rslt)
 ```
 
 You can also visualize the coefficient of variation with 
-```{r}
+```{r, fig.width = 8}
 plot_pwr_cv(rslt)
 ```
 
@@ -54,13 +54,13 @@ The workflow for the TTE power analysis is identical to the STE workflow. First,
 
 The only major difference in using `tte_pwr_sim()` is that the user will have to define the number of sampling periods in each occasion. Refer to the Ecosphere paper and Using spaceNtime vignette for the definition of sampling periods. The length of sampling periods is calculated based on camera area and animal movement. Remember that in real life, there will be a tradeoff between the number of sampling periods per occasion and total number of occasions. 
 
-```{r}
+```{r, fig.width = 8}
 res_tte <- tte_pwr_sim(
   N = c(1, 2),
   study_area = c(1e6),
   ncam = c(30, 50),
-  nocc = c(100, 200),
-  nper = 10,
+  nocc = c(300, 500),
+  nper = 100,
   cam_area = 100,
   niter = 5
 )
