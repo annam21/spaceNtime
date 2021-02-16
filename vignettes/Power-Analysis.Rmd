@@ -47,3 +47,5 @@ You can also visualize the coefficient of variation with
 ```{r}
 plot_pwr_cv(rslt)
 ```
+
+# TTE power analysis 
