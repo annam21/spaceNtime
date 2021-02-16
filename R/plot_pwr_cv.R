@@ -23,6 +23,18 @@ plot_pwr_cv <- function(pwr_sim_rslt){
     mutate(cv = sd.estN/mean.estN * 100,
            NOcc = as.factor(NOcc)) # For ggplot
   
+  # For TTE, if there are multiple periods
+  if("NPer" %in% names(pwr_sim_rslt)){
+    if(nrow(distinct(pwr_sim_rslt, NPer)) > 1){
+      cv <- pwr_sim_rslt %>% 
+              group_by(TrueN, NCam, NOcc, StudyArea, CamArea, NPer) %>%
+              summarize(mean.estN = mean(EstN, na.rm = T),
+                        sd.estN = sd(EstN, na.rm = T)) %>%
+              mutate(cv = sd.estN/mean.estN * 100,
+                     NOcc = as.factor(NOcc)) # For ggplot
+    }
+  }
+
   p <- ggplot(cv) + 
     geom_point(aes(x = NCam, 
                    y = cv,
@@ -56,5 +68,21 @@ plot_pwr_cv <- function(pwr_sim_rslt){
                  )
       )
   }
+  
+  # For TTE, if there are multiple periods
+  if("NPer" %in% names(pwr_sim_rslt)){
+    if(nrow(distinct(pwr_sim_rslt, NPer)) > 1){
+      p <- p +
+        facet_wrap(~TrueN + StudyArea + CamArea + NPer,
+                   labeller = labeller(
+                     TrueN = label_facet(pwr_sim_rslt$TrueN, "N = "),
+                     StudyArea = label_facet(pwr_sim_rslt$StudyArea, "Area: "),
+                     CamArea = label_facet(pwr_sim_rslt$CamArea, "CamArea: "),
+                     NPer = label_facet(pwr_sim_rslt$NPer, "# Periods: ")
+                   )
+        )
+    }
+  }
+  
   return(p)
 }

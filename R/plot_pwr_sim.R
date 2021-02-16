@@ -61,5 +61,21 @@ plot_pwr_sim <- function(pwr_sim_rslt){
                      )
         )
     }
+  
+  # For TTE, if there are multiple periods
+  if("NPer" %in% names(pwr_sim_rslt)){
+    if(nrow(distinct(pwr_sim_rslt, NPer)) > 1){
+      p <- p +
+        facet_wrap(~TrueN + StudyArea + CamArea + NPer,
+                   labeller = labeller(
+                     TrueN = label_facet(pwr_sim_rslt$TrueN, "N = "),
+                     StudyArea = label_facet(pwr_sim_rslt$StudyArea, "Area: "),
+                     CamArea = label_facet(pwr_sim_rslt$CamArea, "CamArea: "),
+                     NPer = label_facet(pwr_sim_rslt$NPer, "# Periods: ")
+                   )
+        )
+    }
+  }
+
   return(p)
 }
