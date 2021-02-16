@@ -42,10 +42,11 @@ deploy <- data.frame(
                    tz = "GMT"),
   area = c(300, 200, 200, 450)
 )
+study_dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
 occ <- build_occ(samp_freq = 3600, 
             samp_length = 10,
             study_start = study_dates[1],
             study_end = study_dates[2])
-ste_build_eh(df, deploy, occ)
-ste_estN_fn(dat.ste, study_area = 1e6)
+dat_ste <- ste_build_eh(df, deploy, occ)
+ste_estN_fn(dat_ste, study_area = 1e6)
 }

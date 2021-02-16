@@ -1,0 +1,70 @@
+---
+title: "Power-Analysis"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Power-Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Workflow for running a simulation-based power analysis for STE and TTE
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(spaceNtime)
+```
+
+# STE power analysis 
+
+The precision in STE is driven by a combination of number of cameras, number of occasions, and animal density. 
+
+To simulate STE under different scenarios, use the function `ste_pwr_sim()`.
+
+```{r}
+rslt <- ste_pwr_sim(
+  N = c(1, 2),
+  study_area = c(1e6),
+  ncam = c(30, 50),
+  nocc = c(1000, 2000),
+  cam_area = 100,
+  niter = 5
+)
+rslt
+```
+
+To visualize the results, you can plot the iterations with 
+```{r}
+plot_pwr_sim(rslt)
+```
+
+You can also visualize the coefficient of variation with 
+```{r}
+plot_pwr_cv(rslt)
+```
+
+# TTE power analysis 
+
+The workflow for the TTE power analysis is identical to the STE workflow. First, simulate scenarios using the function `tte_pwr_sim()`, then visualize the results using the same plot functions as you used for STE. 
+
+The only major difference in using `tte_pwr_sim()` is that the user will have to define the number of sampling periods in each occasion. Refer to the Ecosphere paper and Using spaceNtime vignette for the definition of sampling periods. The length of sampling periods is calculated based on camera area and animal movement. Remember that in real life, there will be a tradeoff between the number of sampling periods per occasion and total number of occasions. 
+
+```{r}
+res_tte <- tte_pwr_sim(
+  N = c(1, 2),
+  study_area = c(1e6),
+  ncam = c(30, 50),
+  nocc = c(100, 200),
+  nper = 10,
+  cam_area = 100,
+  niter = 5
+)
+res_tte
+plot_pwr_sim(res_tte)
+plot_pwr_cv(res_tte)
+```
