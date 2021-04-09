@@ -15,5 +15,6 @@ Imports: magrittr, dplyr, tidyr, purrr, lubridate, MASS, stats, msm, assertr, ti
 Suggests: 
     knitr,
     rmarkdown,
-    testthat
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
+Config/testthat/edition: 3
