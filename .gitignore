@@ -3,3 +3,5 @@ doc
 inst/doc
 .Rproj.user
 debug/
+/doc/
+/Meta/

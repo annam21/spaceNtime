@@ -16,6 +16,8 @@ knitr::opts_chunk$set(
 )
 ```
 
+When using this package, please cite [Moeller and Lukacs 2021](https://link.springer.com/content/pdf/10.1007/s42991-021-00181-8.pdf)
+
 The package spaceNtime was created to assist with analyses described in ["Three novel methods to estimate abundance of unmarked animals using remote cameras" by Moeller et al. (2018)](https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.2331). This package helps the user create an encounter history from a database of analyzed photos and run each of the models.
 
 ## Load the package

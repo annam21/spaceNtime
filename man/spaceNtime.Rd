@@ -12,6 +12,11 @@ models developed by
 \href{https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.2331}{Moeller et al. 2018}.
 }
 \references{
+Moeller, A. K. and P. M. Lukacs. 2021. spaceNtime: an R package for estimating abundance
+of unmarked animals using camera-trap photographs. Mammalian Biology. 
+\href{https://link.springer.com/content/pdf/10.1007/s42991-021-00181-8.pdf}{10.1007/s42991-021-00181-8}
+
+
 Moeller, A. K., P. M. Lukacs, and J. Horne. 2018. Three novel methods
 to estimate abundance of unmarked animals using remote cameras. Ecosphere 9(8):
 e02331. \href{https://esajournals.onlinelibrary.wiley.com/doi/full/10.1002/ecs2.2331}{10.1002/ecs2.2331}
