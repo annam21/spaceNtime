@@ -9,7 +9,7 @@ This is my first package and is frequently changing. I would appreciate hearing 
 See our publication [spaceNtime: an R package for estimating abundance of unmarked
 animals using camera‑trap photographs](https://doi.org/10.1007/s42991-021-00181-8) to learn more about designing and running these analyses.
 
-## Getting started on analysis
+## Getting started with the package
 Please try installing the package and viewing the vignette.
 
 1. Update to the newest version of R
