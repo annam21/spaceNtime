@@ -34,11 +34,16 @@
 #'   area = c(300, 200, 200, 450)
 #' )
 #' study_dates <- as.POSIXct(c("2016-01-01 00:00:00", "2016-01-04 23:59:59"), tz = "GMT")
-#' occ <- build_occ(samp_freq = 3600 * 10,
-#'                  samp_length = 3600 * 10, 
-#'                  study_start = study_dates[1],
-#'                  study_end = study_dates[2]) 
-#' tte_eh <- tte_build_eh(df, deploy, occ)
+#' per <- tte_samp_per(deploy, lps = 30/3600)
+#' occ <- tte_build_occ(
+#'   per_length = per,
+#'   nper = 24,
+#'   time_btw = 2 * 3600,
+#'   study_start = study_dates[1],
+#'   study_end = study_dates[2]
+#' )
+#' tte_eh <- tte_build_eh(df, deploy, occ,  per) 
+#' 
 tte_build_eh <- function(df, deploy, occ, samp_per, ...){
   
   tictoc::tic("Data checks")
